@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow authentication routes
+Disallow: /api/auth/
+Disallow: /api/stripe/
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml

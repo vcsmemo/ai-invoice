@@ -1,0 +1,399 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Plus, Trash2, Download } from 'lucide-react'
+import { InvoiceData } from '@/lib/types'
+import { countries, generateInvoiceNumber, calculateInvoiceTotal } from '@/lib/countries'
+import { generatePDF } from '@/lib/pdf-generator'
+
+interface InvoiceGeneratorProps {
+  selectedCountry: string
+}
+
+export default function InvoiceGenerator({ selectedCountry }: InvoiceGeneratorProps) {
+  const country = countries[selectedCountry]
+  const [freeCount, setFreeCount] = useState(0)
+  const [isPro, setIsPro] = useState(false)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+
+  const [invoice, setInvoice] = useState<InvoiceData>({
+    invoiceNumber: generateInvoiceNumber(),
+    date: new Date().toISOString().split('T')[0],
+    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    from: {
+      name: '',
+      email: '',
+      address: '',
+      phone: '',
+    },
+    to: {
+      name: '',
+      email: '',
+      address: '',
+    },
+    items: [
+      {
+        id: '1',
+        description: '',
+        quantity: 1,
+        rate: 0,
+        amount: 0,
+      },
+    ],
+    notes: country.notes,
+    taxRate: country.taxRate,
+    currency: country.currency,
+    country: selectedCountry,
+  })
+
+  useEffect(() => {
+    // Load free count from localStorage
+    const count = localStorage.getItem('invoiceFreeCount')
+    setFreeCount(count ? parseInt(count) : 0)
+
+    const proStatus = localStorage.getItem('invoicePro')
+    setIsPro(proStatus === 'true')
+  }, [])
+
+  const handleDownloadPDF = async () => {
+    // Check free limit
+    if (!isPro && freeCount >= 3) {
+      setShowUpgradeModal(true)
+      return
+    }
+
+    // Generate PDF
+    await generatePDF(invoice, !isPro)
+
+    // Update free count
+    if (!isPro) {
+      const newCount = freeCount + 1
+      setFreeCount(newCount)
+      localStorage.setItem('invoiceFreeCount', newCount.toString())
+    }
+  }
+
+  const handleItemChange = (id: string, field: string, value: any) => {
+    const newItems = invoice.items.map(item => {
+      if (item.id === id) {
+        const updated = { ...item, [field]: value }
+        if (field === 'quantity' || field === 'rate') {
+          updated.amount = updated.quantity * updated.rate
+        }
+        return updated
+      }
+      return item
+    })
+    setInvoice({ ...invoice, items: newItems })
+  }
+
+  const addItem = () => {
+    const newItem = {
+      id: Date.now().toString(),
+      description: '',
+      quantity: 1,
+      rate: 0,
+      amount: 0,
+    }
+    setInvoice({ ...invoice, items: [...invoice.items, newItem] })
+  }
+
+  const removeItem = (id: string) => {
+    if (invoice.items.length > 1) {
+      setInvoice({ ...invoice, items: invoice.items.filter(item => item.id !== id) })
+    }
+  }
+
+  const { subtotal, tax, total } = calculateInvoiceTotal(invoice.items, invoice.taxRate)
+
+  return (
+    <>
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-primary-600 to-purple-600 px-8 py-6 text-white">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="text-sm opacity-90">Invoice #{invoice.invoiceNumber}</div>
+                <div className="text-2xl font-bold mt-1">{country.flag} {country.name}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm opacity-90">Date</div>
+                <div className="font-semibold">{invoice.date}</div>
+                <div className="text-sm opacity-90 mt-2">Due Date</div>
+                <div className="font-semibold">{invoice.dueDate}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-8">
+            {/* From & To */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">From (Your Details)</label>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Your Name / Company Name"
+                    className="input-field"
+                    value={invoice.from.name}
+                    onChange={(e) => setInvoice({ ...invoice, from: { ...invoice.from, name: e.target.value } })}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Your Email"
+                    className="input-field"
+                    value={invoice.from.email}
+                    onChange={(e) => setInvoice({ ...invoice, from: { ...invoice.from, email: e.target.value } })}
+                  />
+                  <textarea
+                    placeholder="Your Address"
+                    className="input-field"
+                    rows={2}
+                    value={invoice.from.address}
+                    onChange={(e) => setInvoice({ ...invoice, from: { ...invoice.from, address: e.target.value } })}
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone (Optional)"
+                    className="input-field"
+                    value={invoice.from.phone || ''}
+                    onChange={(e) => setInvoice({ ...invoice, from: { ...invoice.from, phone: e.target.value } })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">To (Client Details)</label>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Client Name / Company Name"
+                    className="input-field"
+                    value={invoice.to.name}
+                    onChange={(e) => setInvoice({ ...invoice, to: { ...invoice.to, name: e.target.value } })}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Client Email"
+                    className="input-field"
+                    value={invoice.to.email}
+                    onChange={(e) => setInvoice({ ...invoice, to: { ...invoice.to, email: e.target.value } })}
+                  />
+                  <textarea
+                    placeholder="Client Address"
+                    className="input-field"
+                    rows={2}
+                    value={invoice.to.address}
+                    onChange={(e) => setInvoice({ ...invoice, to: { ...invoice.to, address: e.target.value } })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Line Items */}
+            <div className="mb-8">
+              <label className="block text-sm font-medium text-gray-700 mb-3">Line Items</label>
+              <div className="border rounded-lg overflow-hidden">
+                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 font-medium text-sm text-gray-700">
+                  <div className="col-span-5">Description</div>
+                  <div className="col-span-2">Quantity</div>
+                  <div className="col-span-2">Rate</div>
+                  <div className="col-span-2">Amount</div>
+                  <div className="col-span-1"></div>
+                </div>
+
+                {invoice.items.map((item, index) => (
+                  <div key={item.id} className="grid grid-cols-12 gap-4 px-6 py-3 border-t">
+                    <div className="col-span-5">
+                      <input
+                        type="text"
+                        placeholder="Item description"
+                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-primary-500"
+                        value={item.description}
+                        onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="number"
+                        placeholder="1"
+                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-primary-500"
+                        value={item.quantity}
+                        onChange={(e) => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-primary-500 pl-6"
+                          value={item.rate}
+                          onChange={(e) => handleItemChange(item.id, 'rate', parseFloat(e.target.value) || 0)}
+                        />
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                          {country.currency === 'USD' ? '$' : country.currency === 'EUR' ? '€' : country.currency === 'GBP' ? '£' : country.currency + ' '}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="px-3 py-2 bg-gray-50 rounded text-gray-700">
+                        {country.currency === 'USD' ? '$' : country.currency === 'EUR' ? '€' : country.currency === 'GBP' ? '£' : country.currency + ' '}
+                        {item.amount.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="col-span-1">
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        disabled={invoice.items.length === 1}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded transition disabled:opacity-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={addItem}
+                className="mt-3 flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Item</span>
+              </button>
+            </div>
+
+            {/* Tax Rate */}
+            <div className="mb-8">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {country.taxLabel} Rate (%)
+              </label>
+              <input
+                type="number"
+                className="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
+                value={invoice.taxRate}
+                onChange={(e) => setInvoice({ ...invoice, taxRate: parseFloat(e.target.value) || 0 })}
+              />
+            </div>
+
+            {/* Notes */}
+            <div className="mb-8">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+              <textarea
+                className="input-field"
+                rows={3}
+                value={invoice.notes}
+                onChange={(e) => setInvoice({ ...invoice, notes: e.target.value })}
+              />
+            </div>
+
+            {/* Totals */}
+            <div className="flex justify-end">
+              <div className="w-72">
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-medium">
+                    {country.currency === 'USD' ? '$' : country.currency === 'EUR' ? '€' : country.currency === 'GBP' ? '£' : country.currency + ' '}
+                    {subtotal.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-gray-600">{country.taxLabel} ({invoice.taxRate}%)</span>
+                  <span className="font-medium">
+                    {country.currency === 'USD' ? '$' : country.currency === 'EUR' ? '€' : country.currency === 'GBP' ? '£' : country.currency + ' '}
+                    {tax.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between py-3 bg-primary-50 px-4 rounded-lg -mx-4">
+                  <span className="font-bold text-gray-900">Total</span>
+                  <span className="font-bold text-xl text-primary-600">
+                    {country.currency === 'USD' ? '$' : country.currency === 'EUR' ? '€' : country.currency === 'GBP' ? '£' : country.currency + ' '}
+                    {total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Download Button */}
+            <div className="flex justify-center pt-6 border-t">
+              <button
+                onClick={handleDownloadPDF}
+                className="btn-primary text-lg px-8 py-4 flex items-center space-x-2"
+              >
+                <Download className="w-5 h-5" />
+                <span>Download PDF</span>
+              </button>
+            </div>
+
+            {/* Free Usage Notice */}
+            {!isPro && (
+              <div className="mt-4 text-center text-sm text-gray-500">
+                Free usage: {freeCount}/3 invoices this month.
+                {freeCount >= 3 && (
+                  <span className="text-primary-600 font-medium ml-2">
+                    <a href="/pricing">Upgrade to Pro</a> for unlimited invoices
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Upgrade to Pro</h3>
+            <p className="text-gray-600 mb-6">
+              You've used your 3 free invoices this month. Upgrade to Pro for unlimited invoices,
+              no watermarks, and more features.
+            </p>
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center space-x-2">
+                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                </div>
+                <span className="text-gray-700">Unlimited invoices</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                </div>
+                <span className="text-gray-700">No watermarks</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                </div>
+                <span className="text-gray-700">Save templates & clients</span>
+              </div>
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition"
+              >
+                Maybe Later
+              </button>
+              <a
+                href="/pricing"
+                className="flex-1 btn-primary text-center"
+              >
+                Upgrade Now
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
