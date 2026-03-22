@@ -171,45 +171,58 @@ export default function InvoicePreview({
   };
 
   return (
-    <div className="bg-[rgb(24,24,24)] rounded-xl border border-[rgba(255,255,255,0.08)] overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(255,255,255,0.08)]">
+    <div className="bg-[rgb(17,17,17)] rounded-[10px] border border-[rgba(96,96,104,0.2)] overflow-hidden font-mono shadow-2xl relative">
+      {/* Terminal Header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-[rgb(26,26,26)] border-b border-[rgba(96,96,104,0.2)]">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+        </div>
+        <div className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest">
+          invoice-preview --readonly
+        </div>
+        <div className="w-10" />
+      </div>
+
+      {/* Action Bar */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(96,96,104,0.1)] bg-[rgb(20,20,20)]">
         <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-[rgb(180,180,180)]" />
-          <span className="text-sm font-medium text-[rgb(250,250,250)]">Invoice Preview</span>
+          <FileText className="w-4 h-4 text-[rgb(217,145,120)]" />
+          <span className="text-xs font-bold text-[rgb(237,237,237)] uppercase tracking-widest">$ view doc</span>
         </div>
         <div className="flex gap-2">
           {!isEditing ? (
             <>
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-3 py-1.5 text-xs font-medium text-[rgb(250,250,250)] bg-[rgb(32,32,32)] border border-[rgba(255,255,255,0.08)] rounded-lg hover:bg-[rgb(40,40,40)] transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-bold text-[rgb(237,237,237)] bg-[rgb(38,38,38)] border border-[rgba(96,96,104,0.2)] rounded-[6px] hover:bg-[rgb(45,45,45)] transition-colors flex items-center gap-1.5 uppercase tracking-tighter"
               >
-                <Edit2 className="w-3.5 h-3.5" />
-                Edit
+                <Edit2 className="w-3 h-3" />
+                edit
               </button>
               <button
                 onClick={onDownload}
                 disabled={isDownloading}
-                className="px-3 py-1.5 text-xs font-medium text-[rgb(8,8,8)] bg-[rgb(200,245,66)] rounded-lg hover:bg-[rgb(180,230,60)] disabled:bg-[rgb(40,40,40)] disabled:text-[rgb(80,80,80)] disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-bold text-[rgb(10,10,10)] bg-[rgb(217,145,120)] rounded-[6px] hover:bg-[rgb(230,160,135)] disabled:bg-[rgb(38,38,38)] disabled:text-[rgb(163,163,163)] disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 uppercase tracking-tighter glow-accent"
               >
-                <Download className="w-3.5 h-3.5" />
-                {isDownloading ? 'Downloading...' : 'Download PDF'}
+                <Download className="w-3 h-3" />
+                {isDownloading ? 'generating...' : 'export pdf'}
               </button>
             </>
           ) : (
             <>
               <button
                 onClick={handleCancel}
-                className="px-3 py-1.5 text-xs font-medium text-[rgb(250,250,250)] bg-[rgb(32,32,32)] border border-[rgba(255,255,255,0.08)] rounded-lg hover:bg-[rgb(40,40,40)] transition-colors"
+                className="px-3 py-1.5 text-xs font-bold text-[rgb(237,237,237)] bg-[rgb(38,38,38)] border border-[rgba(96,96,104,0.2)] rounded-[6px] hover:bg-[rgb(45,45,45)] transition-colors uppercase tracking-tighter"
               >
-                Cancel
+                cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-3 py-1.5 text-xs font-medium text-[rgb(8,8,8)] bg-[rgb(200,245,66)] rounded-lg hover:bg-[rgb(180,230,60)] transition-colors"
+                className="px-3 py-1.5 text-xs font-bold text-[rgb(10,10,10)] bg-[rgb(217,145,120)] rounded-[6px] hover:bg-[rgb(230,160,135)] transition-colors uppercase tracking-tighter glow-accent"
               >
-                Save
+                save
               </button>
             </>
           )}
@@ -221,7 +234,7 @@ export default function InvoicePreview({
         {/* Invoice Number & Meta */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wide">Invoice #</label>
+            <label className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest"># invoice_id</label>
             {isEditing ? (
               <input
                 type="text"
@@ -232,10 +245,10 @@ export default function InvoicePreview({
                     invoice: { ...editedData.invoice, invoiceNumber: e.target.value },
                   })
                 }
-                className="w-full mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                className="w-full mt-1 px-2 py-1.5 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded-[4px] text-xs text-[rgb(237,237,237)] focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] font-mono"
               />
             ) : (
-              <p className="text-sm font-medium text-[rgb(250,250,250)] mt-1">{editedData.invoice.invoiceNumber}</p>
+              <p className="text-xs font-bold text-[rgb(217,145,120)] mt-1">{editedData.invoice.invoiceNumber}</p>
             )}
           </div>
 
@@ -260,7 +273,7 @@ export default function InvoicePreview({
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wide">Payment Terms</label>
+            <label className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest"># payment_terms</label>
             {isEditing ? (
               <select
                 value={editedData.invoice.paymentTerms || 'Net 30'}
@@ -270,16 +283,15 @@ export default function InvoicePreview({
                     invoice: { ...editedData.invoice, paymentTerms: e.target.value },
                   })
                 }
-                className="w-full mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                className="w-full mt-1 px-2 py-1.5 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded-[4px] text-xs text-[rgb(237,237,237)] focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] font-mono"
               >
-                <option value="Due on receipt">Due on receipt</option>
-                <option value="Net 15">Net 15 days</option>
-                <option value="Net 30">Net 30 days</option>
-                <option value="Net 60">Net 60 days</option>
-                <option value="Net 90">Net 90 days</option>
+                <option value="Due on receipt">receipt</option>
+                <option value="Net 15">net_15</option>
+                <option value="Net 30">net_30</option>
+                <option value="Net 60">net_60</option>
               </select>
             ) : (
-              <p className="text-sm font-medium text-[rgb(250,250,250)] mt-1">{editedData.invoice.paymentTerms || 'Net 30'}</p>
+              <p className="text-xs font-bold text-[rgb(237,237,237)] mt-1">{editedData.invoice.paymentTerms || 'Net 30'}</p>
             )}
           </div>
         </div>
@@ -519,10 +531,10 @@ export default function InvoicePreview({
 
         {/* Totals */}
         <div className="flex justify-end">
-          <div className="w-56 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-[rgb(180,180,180)]">Subtotal</span>
-              <span className="font-medium text-[rgb(250,250,250)]">{formatCurrency(editedData.subtotal, editedData.invoice.currency)}</span>
+          <div className="w-64 space-y-3 bg-[rgb(20,20,20)] p-4 rounded-[10px] border border-[rgba(96,96,104,0.1)]">
+            <div className="flex justify-between text-xs">
+              <span className="text-[rgb(163,163,163)] uppercase tracking-tighter">subtotal:</span>
+              <span className="font-bold text-[rgb(237,237,237)]">{formatCurrency(editedData.subtotal, editedData.invoice.currency)}</span>
             </div>
 
             {isEditing ? (
@@ -531,28 +543,28 @@ export default function InvoicePreview({
                   type="number"
                   value={editedData.tax?.rate || 0}
                   onChange={(e) => updateTax('rate', e.target.value)}
-                  className="w-16 px-2 py-1 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                  className="w-12 px-1.5 py-1 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded text-[10px] text-[rgb(237,237,237)] focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] font-mono"
                   step="0.1"
                 />
-                <span className="text-sm text-[rgb(180,180,180)]">% Tax</span>
-                <span className="font-medium text-[rgb(250,250,250)] ml-auto">
+                <span className="text-[10px] text-[rgb(163,163,163)] uppercase">% tax:</span>
+                <span className="font-bold text-[rgb(237,237,237)] ml-auto text-xs">
                   {formatCurrency(editedData.tax?.amount || 0, editedData.invoice.currency)}
                 </span>
               </div>
             ) : (
               editedData.tax && editedData.tax.rate > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-[rgb(180,180,180)]">
-                    Tax ({editedData.tax.rate}%)
+                <div className="flex justify-between text-xs">
+                  <span className="text-[rgb(163,163,163)] uppercase tracking-tighter">
+                    tax_{editedData.tax.rate}%:
                   </span>
-                  <span className="font-medium text-[rgb(250,250,250)]">{formatCurrency(editedData.tax.amount, editedData.invoice.currency)}</span>
+                  <span className="font-bold text-[rgb(237,237,237)]">{formatCurrency(editedData.tax.amount, editedData.invoice.currency)}</span>
                 </div>
               )
             )}
 
-            <div className="flex justify-between text-lg font-bold pt-3 border-t border-[rgba(255,255,255,0.08)]">
-              <span className="text-[rgb(250,250,250)]">Total</span>
-              <span className="text-[rgb(250,250,250)]">{formatCurrency(editedData.total, editedData.invoice.currency)}</span>
+            <div className="flex justify-between text-base font-bold pt-3 border-t border-[rgba(96,96,104,0.2)] text-[rgb(217,145,120)]">
+              <span className="uppercase tracking-widest text-xs mt-1">total:</span>
+              <span className="text-xl">{formatCurrency(editedData.total, editedData.invoice.currency)}</span>
             </div>
           </div>
         </div>

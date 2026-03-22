@@ -90,7 +90,19 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
   };
 
   return (
-    <div className="flex flex-col h-full bg-[rgb(16,16,16)] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
+    <div className="flex flex-col h-[600px] bg-[rgb(17,17,17)] border border-[rgba(96,96,104,0.2)] rounded-[10px] overflow-hidden shadow-2xl relative">
+      {/* Terminal Header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-[rgb(26,26,26)] border-b border-[rgba(96,96,104,0.2)]">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+        </div>
+        <div className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest">
+          ai-invoice-terminal --prompt
+        </div>
+        <div className="w-10" /> {/* Spacer */}
+      </div>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
         {messages.map((message, index) => (
@@ -100,24 +112,31 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
           >
             {/* Avatar */}
             {message.role === 'assistant' ? (
-              <div className="flex-shrink-0 w-8 h-8 bg-[rgb(200,245,66)] rounded-full flex items-center justify-center">
-                <Bot className="w-4 h-4 text-[rgb(8,8,8)]" />
+              <div className="flex-shrink-0 w-8 h-8 bg-[rgb(217,145,120)] rounded-[6px] flex items-center justify-center">
+                <Bot className="w-4 h-4 text-[rgb(10,10,10)]" />
               </div>
             ) : (
-              <div className="flex-shrink-0 w-8 h-8 bg-[rgb(24,24,24)] rounded-full flex items-center justify-center border border-[rgba(255,255,255,0.08)]">
-                <User className="w-4 h-4 text-[rgb(180,180,180)]" />
+              <div className="flex-shrink-0 w-8 h-8 bg-[rgb(38,38,38)] rounded-[6px] flex items-center justify-center border border-[rgba(96,96,104,0.2)]">
+                <User className="w-4 h-4 text-[rgb(163,163,163)]" />
               </div>
             )}
 
             {/* Message bubble */}
             <div
-              className={`max-w-[80%] px-4 py-2.5 ${
+              className={`max-w-[85%] px-4 py-3 font-mono ${
                 message.role === 'user'
-                  ? 'bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-2xl rounded-tr-sm'
-                  : 'bg-[rgb(24,24,24)] text-[rgb(250,250,250)] rounded-2xl rounded-tl-sm border border-[rgba(255,255,255,0.08)]'
+                  ? 'bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[8px]'
+                  : 'bg-[rgb(26,26,26)] text-[rgb(237,237,237)] rounded-[8px] border border-[rgba(96,96,104,0.2)]'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+              <div className="flex items-center gap-2 mb-1 text-[10px] opacity-70 font-bold uppercase tracking-tighter">
+                {message.role === 'assistant' ? (
+                  <><span>$</span> ai-assistant</>
+                ) : (
+                  <><span>$</span> user-request</>
+                )}
+              </div>
+              <p className="text-xs whitespace-pre-wrap leading-relaxed">{message.content}</p>
             </div>
           </div>
         ))}
@@ -125,14 +144,14 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
         {/* Typing indicator */}
         {(isGenerating || isLoading) && (
           <div className="flex gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-[rgb(200,245,66)] rounded-full flex items-center justify-center">
-              <Bot className="w-4 h-4 text-[rgb(8,8,8)]" />
+            <div className="flex-shrink-0 w-8 h-8 bg-[rgb(217,145,120)] rounded-[6px] flex items-center justify-center">
+              <Bot className="w-4 h-4 text-[rgb(10,10,10)]" />
             </div>
-            <div className="bg-[rgb(24,24,24)] px-4 py-3 rounded-2xl rounded-tl-sm border border-[rgba(255,255,255,0.08)]">
+            <div className="bg-[rgb(26,26,26)] px-4 py-3 rounded-[8px] border border-[rgba(96,96,104,0.2)]">
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-[rgb(200,245,66)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-[rgb(200,245,66)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-[rgb(200,245,66)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-[rgb(217,145,120)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-[rgb(217,145,120)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-[rgb(217,145,120)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -142,36 +161,33 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
       </div>
 
       {/* Input */}
-      <div className="p-5 border-t border-[rgba(255,255,255,0.08)] bg-[rgb(12,12,12)]">
+      <div className="p-4 border-t border-[rgba(96,96,104,0.1)] bg-[rgb(12,12,12)]">
         <div className="flex gap-3 items-end">
           <div className="flex-1 relative">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message... (Shift+Enter for new line)"
-              className="w-full px-4 py-3 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] focus:border-transparent text-sm text-[rgb(250,250,250)] placeholder:text-[rgb(120,120,120)]"
+              onKeyDown={handleKeyPress}
+              placeholder="Describe work... (cmd+enter to send)"
+              className="w-full px-4 py-3 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded-[8px] resize-none focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] focus:border-transparent text-xs font-mono text-[rgb(237,237,237)] placeholder:text-[rgb(163,163,163)]"
               rows={2}
               disabled={isGenerating || isLoading}
             />
-            <div className="absolute bottom-2 right-2 text-xs text-[rgb(120,120,120)]">
-              Press Enter to send
-            </div>
           </div>
           <button
             onClick={handleSend}
             disabled={!input.trim() || isGenerating || isLoading}
-            className="px-4 py-3 bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-xl hover:bg-[rgb(180,230,60)] disabled:bg-[rgb(40,40,40)] disabled:text-[rgb(80,80,80)] disabled:cursor-not-allowed transition-all flex items-center justify-center h-[66px] w-[66px] flex-shrink-0"
+            className="px-4 py-3 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[8px] hover:bg-[rgb(230,160,135)] disabled:bg-[rgb(38,38,38)] disabled:text-[rgb(163,163,163)] disabled:cursor-not-allowed transition-all flex items-center justify-center h-[52px] w-[52px] flex-shrink-0 glow-accent shadow-lg"
           >
             {isGenerating || isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4" />
             )}
           </button>
         </div>
-        <p className="text-xs text-[rgb(120,120,120)] mt-2 text-center">
-          AI will extract customer info, items, and calculate totals automatically
+        <p className="text-[10px] text-[rgb(163,163,163)] mt-2 text-center font-mono opacity-50 uppercase tracking-widest">
+          ai --parser --active
         </p>
       </div>
     </div>

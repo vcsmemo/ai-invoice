@@ -109,31 +109,32 @@ export default function Home() {
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgb(16,16,16)] text-xs text-[rgb(180,180,180)] mb-10">
-            Free to start · <span className="text-[rgb(200,245,66)]">No credit card</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(96,96,104,0.2)] bg-[rgb(17,17,17)] text-xs text-[rgb(163,163,163)] mb-10">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            V1.0.0 · <span className="text-[rgb(217,145,120)]">Ready to use</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl md:text-6xl font-semibold leading-tight mb-5 max-w-4xl mx-auto">
-            Describe it,<br />
-            we <em className="text-[rgb(200,245,66)] not-italic">invoice</em> it.
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5 max-w-4xl mx-auto tracking-tight">
+            $ ai --generate<br />
+            <span className="text-[rgb(217,145,120)]">invoice</span> --now
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base text-[rgb(180,180,180)] max-w-lg mx-auto mb-10 leading-relaxed">
-            Tell us what you did, who it's for, and how much. AI handles the rest.
+          <p className="text-base text-[rgb(163,163,163)] max-w-lg mx-auto mb-10 leading-relaxed font-mono">
+            Tell us what you did, who it&apos;s for, and how much. AI handles the rest.
           </p>
 
           {/* CTA */}
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
-              className="group px-6 py-3 bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-full font-semibold text-sm hover:scale-[1.02] transition-all duration-200 glow-accent-strong flex items-center gap-2"
+              className="group px-6 py-3 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
             >
-              Start creating free
+              $ start-generater --free
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <p className="text-xs text-[rgb(120,120,120)]">Natural language → Professional PDF</p>
+            <p className="text-xs text-[rgb(163,163,163)]">Natural language → Professional PDF</p>
           </div>
         </div>
       </section>
@@ -141,32 +142,41 @@ export default function Home() {
       {/* How it works */}
       <section className="py-20 px-6 max-w-5xl mx-auto w-full">
         <div className="mb-12">
-          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[rgb(200,245,66)] mb-3">How it works</div>
-          <h2 className="text-3xl md:text-4xl font-semibold">Three steps.<br />Zero friction.</h2>
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[rgb(217,145,120)] mb-3 flex items-center gap-2">
+            <span className="w-8 h-px bg-[rgb(217,145,120)]/30" />
+            How it works
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Three steps.<br />Zero friction.</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)]">
-          <div className="bg-[rgb(16,16,16)] p-8 hover:bg-[rgb(20,20,20)] transition-colors">
-            <div className="text-4xl text-[rgb(200,245,66)] opacity-40 mb-4 font-serif">01</div>
-            <h3 className="text-base font-semibold mb-2">Describe your work</h3>
-            <p className="text-sm text-[rgb(180,180,180)] leading-relaxed">
-              Type what you did, who the client is, the amount — in plain English.
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-[rgb(17,17,17)] p-8 border border-[rgba(96,96,104,0.2)] rounded-[10px] hover:border-[rgb(217,145,120)]/30 transition-colors relative overflow-hidden group">
+            <div className="absolute top-4 right-4 text-xs text-[rgb(163,161,161)]/20 font-bold group-hover:text-[rgb(217,145,120)]/20 transition-colors">0x01</div>
+            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-[rgb(217,145,120)]">
+              <span className="text-[rgb(163,163,163)]">$</span> describe
+            </h3>
+            <p className="text-sm text-[rgb(163,163,163)] leading-relaxed">
+              Tell us what you did in plain English. AI extracts items and amounts.
             </p>
           </div>
 
-          <div className="bg-[rgb(16,16,16)] p-8 hover:bg-[rgb(20,20,20)] transition-colors">
-            <div className="text-4xl text-[rgb(200,245,66)] opacity-40 mb-4 font-serif">02</div>
-            <h3 className="text-base font-semibold mb-2">AI fills everything</h3>
-            <p className="text-sm text-[rgb(180,180,180)] leading-relaxed">
-              Client details, invoice number, line items, taxes — extracted and structured automatically.
+          <div className="bg-[rgb(17,17,17)] p-8 border border-[rgba(96,96,104,0.2)] rounded-[10px] hover:border-[rgb(217,145,120)]/30 transition-colors relative overflow-hidden group">
+            <div className="absolute top-4 right-4 text-xs text-[rgb(163,163,163)]/20 font-bold group-hover:text-[rgb(217,145,120)]/20 transition-colors">0x02</div>
+            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-[rgb(217,145,120)]">
+              <span className="text-[rgb(163,163,163)]">$</span> process --smart
+            </h3>
+            <p className="text-sm text-[rgb(163,163,163)] leading-relaxed">
+              Client details, invoice numbers, taxes — structured automatically.
             </p>
           </div>
 
-          <div className="bg-[rgb(16,16,16)] p-8 hover:bg-[rgb(20,20,20)] transition-colors">
-            <div className="text-4xl text-[rgb(200,245,66)] opacity-40 mb-4 font-serif">03</div>
-            <h3 className="text-base font-semibold mb-2">Send it</h3>
-            <p className="text-sm text-[rgb(180,180,180)] leading-relaxed">
-              Download as PDF, send via email, or share a payment link. One click.
+          <div className="bg-[rgb(17,17,17)] p-8 border border-[rgba(96,96,104,0.2)] rounded-[10px] hover:border-[rgb(217,145,120)]/30 transition-colors relative overflow-hidden group">
+            <div className="absolute top-4 right-4 text-xs text-[rgb(163,163,163)]/20 font-bold group-hover:text-[rgb(217,145,120)]/20 transition-colors">0x03</div>
+            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-[rgb(217,145,120)]">
+              <span className="text-[rgb(163,163,163)]">$</span> deploy --pdf
+            </h3>
+            <p className="text-sm text-[rgb(163,163,163)] leading-relaxed">
+              Download as professional PDF or share a payment link. One click.
             </p>
           </div>
         </div>
@@ -202,24 +212,22 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-6 text-center relative">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[350px] h-[250px] bg-[rgba(200,245,66,0.12)] rounded-full blur-[80px] pointer-events-none" />
+      <section className="py-20 px-6 text-center relative border-y border-[rgba(96,96,104,0.1)]">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[350px] h-[250px] bg-[rgba(217,145,120,0.08)] rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-            Stop wasting time <em className="text-[rgb(200,245,66)] not-italic">making invoices</em>.
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+            Stop wasting time <em className="text-[rgb(217,145,120)] not-italic">building</em> invoices.
           </h2>
-          <p className="text-[rgb(180,180,180)] mb-7">5 free invoices per month. Upgrade when you're ready.</p>
+          <p className="text-[rgb(163,163,163)] mb-7 font-mono text-sm">5 free invoices per month. Upgrade when you&apos;re ready.</p>
 
           <button
             onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
-            className="group px-6 py-3 bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-full font-semibold text-sm hover:scale-[1.02] transition-all duration-200 glow-accent-strong inline-flex items-center gap-2"
+            className="group px-6 py-3 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent inline-flex items-center gap-2"
           >
-            Start generating
+            $ start-deploying
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
-
-          <p className="text-xs text-[rgb(120,120,120)] mt-3">No account required for first invoice</p>
         </div>
       </section>
     </div>

@@ -1,10 +1,13 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import SessionProvider from '@/components/SessionProvider'
 import SchemaOrg from '@/components/SchemaOrg'
 
-const inter = Inter({ subsets: ['latin'] })
+const mono = JetBrains_Mono({ 
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -25,6 +28,7 @@ export const metadata: Metadata = {
     'consulting invoice',
     'invoice creator',
     'instant invoice',
+    'professional templates',
   ],
   authors: [{ name: 'AI Invoice Generator' }],
   creator: 'AI Invoice Generator',
@@ -80,10 +84,9 @@ export const metadata: Metadata = {
     },
   },
 
-  // Verification (add your keys)
+  // Verification
   verification: {
     google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
   },
 }
 
@@ -93,12 +96,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${mono.variable}`}>
       <head>
         <SchemaOrg />
       </head>
-      <body className={inter.className}>
-        <SessionProvider>{children}</SessionProvider>
+      <body className="font-mono bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary">
+        <div className="fixed inset-0 grid-bg pointer-events-none z-0" />
+        <div className="relative z-10">
+          <SessionProvider>{children}</SessionProvider>
+        </div>
       </body>
     </html>
   )

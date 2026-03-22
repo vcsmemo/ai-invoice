@@ -4,35 +4,32 @@
 
 @layer base {
   :root {
-    --background: 8 8 8;
-    --foreground: 250 250 250;
-    --card: 16 16 16;
-    --card-foreground: 250 250 250;
-    --popover: 16 16 16;
-    --popover-foreground: 250 250 250;
-    --primary: 200 245 66;
-    --primary-foreground: 8 8 8;
-    --secondary: 120 120 120;
-    --secondary-foreground: 250 250 250;
-    --muted: 120 120 120;
-    --muted-foreground: 120 120 120;
-    --accent: 200 245 66;
-    --accent-foreground: 8 8 8;
+    --background: 10 10 10;
+    --foreground: 237 237 237;
+    --card: 17 17 17;
+    --card-foreground: 237 237 237;
+    --popover: 17 17 17;
+    --popover-foreground: 237 237 237;
+    --primary: 217 145 120;
+    --primary-foreground: 10 10 10;
+    --secondary: 38 38 38;
+    --secondary-foreground: 237 237 237;
+    --muted: 38 38 38;
+    --muted-foreground: 163 163 163;
+    --accent: 217 145 120;
+    --accent-foreground: 10 10 10;
     --destructive: 239 68 68;
-    --destructive-foreground: 250 250 250;
-    --border: 255 255 255 0.08;
-    --input: 255 255 255 0.08;
-    --ring: 200 245 66;
-    --radius: 0.75rem;
+    --destructive-foreground: 237 237 237;
+    --border: 96 96 104 0.2;
+    --input: 96 96 104 0.2;
+    --ring: 217 145 120;
+    --radius: 0.625rem;
   }
 }
 
 body {
   background: rgb(var(--background));
   color: rgb(var(--foreground));
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -55,33 +52,50 @@ body::before {
     text-wrap: balance;
   }
 
+  .grid-bg {
+    background-image: 
+      linear-gradient(to right, rgba(237, 237, 237, 0.03) 1px, transparent 1px),
+      linear-gradient(rgba(237, 237, 237, 0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
   .glow-accent {
-    box-shadow: 0 0 20px rgba(200, 245, 66, 0.12);
+    box-shadow: 0 0 20px rgba(217, 145, 120, 0.12);
   }
 
   .glow-accent-strong {
-    box-shadow: 0 0 30px rgba(200, 245, 66, 0.2);
+    box-shadow: 0 0 30px rgba(217, 145, 120, 0.2);
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .animate-blink {
+    animation: blink 1s step-end infinite;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-5 py-2.5 bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-full font-semibold text-sm hover:scale-[1.02] transition-all duration-200 glow-accent;
+    @apply px-5 py-2.5 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[10px] font-semibold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent;
   }
 
   .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(200, 245, 66, 0.2);
+    box-shadow: 0 0 30px rgba(217, 145, 120, 0.2);
+    @apply bg-[rgb(230,160,135)];
   }
 
   .btn-secondary {
-    @apply px-5 py-2.5 border border-[rgba(255,255,255,0.08)] text-[rgb(250,250,250)] rounded-full font-semibold text-sm hover:bg-[rgb(24,24,24)] transition-all duration-200;
+    @apply px-5 py-2.5 bg-[rgb(38,38,38)] border border-[rgba(96,96,104,0.2)] text-[rgb(237,237,237)] rounded-[10px] font-semibold text-sm hover:bg-[rgb(45,45,45)] active:scale-[0.98] transition-all duration-200;
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 bg-[rgb(16,16,16)] border border-[rgba(255,255,255,0.08)] rounded-xl focus:ring-2 focus:ring-[rgb(200,245,66)] focus:border-transparent outline-none transition-all duration-200 text-[rgb(250,250,250)] placeholder:text-[rgb(120,120,120)];
+    @apply w-full px-4 py-2.5 bg-[rgb(17,17,17)] border border-[rgba(96,96,104,0.2)] rounded-[10px] focus:ring-1 focus:ring-[rgb(217,145,120)] focus:border-transparent outline-none transition-all duration-200 text-[rgb(237,237,237)] placeholder:text-[rgb(163,163,163)];
   }
 
   .card {
-    @apply bg-[rgb(16,16,16)] border border-[rgba(255,255,255,0.08)] rounded-xl;
+    @apply bg-[rgb(17,17,17)] border border-[rgba(96,96,104,0.2)] rounded-[10px];
   }
 }
