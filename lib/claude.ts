@@ -6,6 +6,16 @@ const anthropic = new Anthropic({
 });
 
 export interface InvoiceData {
+  from?: {
+    name: string;
+    email?: string;
+    company?: string;
+    address?: string;
+    phone?: string;
+    website?: string;
+    taxId?: string;
+    logo?: string;
+  };
   customer: {
     name: string;
     email?: string;
@@ -17,16 +27,32 @@ export interface InvoiceData {
     quantity: number;
     unitPrice: number;
     total?: number;
+    sku?: string;
   }>;
   invoice: {
+    invoiceNumber: string;
+    poNumber?: string;
     issueDate: string;
     dueDate?: string;
     currency: string;
     notes?: string;
+    paymentTerms?: string;
+  };
+  payment?: {
+    method?: string;
+    bankAccount?: string;
+    paypalEmail?: string;
+    instructions?: string;
   };
   tax?: {
     rate: number;
     amount: number;
+    description?: string;
+  };
+  discount?: {
+    amount: number;
+    percent?: number;
+    description?: string;
   };
   subtotal: number;
   total: number;
