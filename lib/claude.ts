@@ -1,9 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk';
 
 // Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+let anthropicInstance: Anthropic | null = null;
+
+export function getAnthropic() {
+  if (!anthropicInstance) {
+    anthropicInstance = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY || '',
+    });
+  }
+  return anthropicInstance;
+}
 
 export interface InvoiceData {
   from?: {
@@ -176,7 +183,7 @@ IMPORTANT:
 
 Return ONLY the JSON, no additional text. Ensure all numbers are valid numbers, not strings.`;
 
-    const response = await anthropic.messages.create({
+    const response = await getAnthropic().messages.create({
       model: 'claude-3-5-haiku-20241022',
       max_tokens: 2000,
       system: systemPrompt,
@@ -281,7 +288,7 @@ Keep responses concise and friendly. If users want to generate an invoice, guide
       { role: 'user', content: message },
     ];
 
-    const response = await anthropic.messages.create({
+    const response = await getAnthropic().messages.create({
       model: 'claude-3-5-haiku-20241022',
       max_tokens: 1000,
       system: systemPrompt,
@@ -299,4 +306,4 @@ Keep responses concise and friendly. If users want to generate an invoice, guide
   }
 }
 
-export default anthropic;
+export default getAnthropic;

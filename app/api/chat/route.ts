@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { generateInvoiceFromChat, ChatMessage } from '@/lib/claude';
 import { getOrCreateProfile } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication

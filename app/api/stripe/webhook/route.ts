@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,10 +58,25 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Update user credits
-      const { error } = await supabase
+      // Fetch current credits
+      const { data: user } = await supabaseAdmin
         .from('users')
-        .update({ credits_remaining: supabase.raw(`credits_remaining + ${credits}`) })
+        .select('credits_remaining')
+        .eq('id', userId)
+        .single();
+
+      if (!user) {
+        console.error('User not found for credit update');
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        );
+      }
+
+      // Update user credits
+      const { error } = await supabaseAdmin
+        .from('users')
+        .update({ credits_remaining: (user.credits_remaining || 0) + parseInt(credits) })
         .eq('id', userId);
 
       if (error) {
@@ -73,7 +88,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Record credit purchase
-      const { error: purchaseError } = await supabase
+      const { error: purchaseError } = await supabaseAdmin
         .from('credit_purchases')
         .insert({
           user_id: userId,

@@ -1,8 +1,22 @@
 import Stripe from 'stripe';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-11-20.acacia',
-  typescript: true,
+let stripeInstance: Stripe | null = null;
+
+export function getStripe() {
+  if (!stripeInstance) {
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+      apiVersion: '2026-02-25.clover',
+      typescript: true,
+    });
+  }
+  return stripeInstance;
+}
+
+// For backward compatibility while refactoring
+export const stripe = new Proxy({} as Stripe, {
+  get: (target, prop, receiver) => {
+    return Reflect.get(getStripe(), prop, receiver);
+  }
 });
 
 // Credit packages

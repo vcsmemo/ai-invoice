@@ -9,6 +9,8 @@ import {
 } from '@/lib/supabase';
 import { InvoiceData } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication

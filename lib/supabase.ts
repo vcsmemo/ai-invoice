@@ -7,13 +7,27 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Supabase client for server-side operations (with service role key)
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+let supabaseAdminInstance: any = null;
 
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
+export function getSupabaseAdmin() {
+  if (!supabaseAdminInstance) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+  }
+  return supabaseAdminInstance;
+}
+
+// For backward compatibility
+export const supabaseAdmin = new Proxy({} as any, {
+  get: (target, prop, receiver) => {
+    return Reflect.get(getSupabaseAdmin(), prop, receiver);
+  }
 });
 
 // Database types
@@ -21,8 +35,10 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  avatar_url?: string;
   credits_remaining: number;
   created_at: string;
+  updated_at: string;
 }
 
 export interface Invoice {
@@ -151,7 +167,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   return data;
 }
 
-export async function createUser(user: Omit<User, 'created_at'>): Promise<User | null> {
+export async function createUser(user: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User | null> {
   const { data, error } = await supabase
     .from('users')
     .insert(user)
@@ -170,9 +186,21 @@ export async function updateUserCredits(
   userId: string,
   creditsToAdd: number
 ): Promise<User | null> {
+  // Fetch current credits
+  const { data: user } = await supabase
+    .from('users')
+    .select('credits_remaining')
+    .eq('id', userId)
+    .single();
+
+  if (!user) {
+    console.error('User not found for credit update');
+    return null;
+  }
+
   const { data, error } = await supabase
     .from('users')
-    .update({ credits_remaining: supabase.raw(`credits_remaining + ${creditsToAdd}`) })
+    .update({ credits_remaining: (user.credits_remaining || 0) + creditsToAdd })
     .eq('id', userId)
     .select()
     .single();

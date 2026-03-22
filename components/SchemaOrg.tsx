@@ -26,7 +26,7 @@ export default function WebPage() {
       'Professional templates',
       'Instant download',
     ],
-  } satisfies WithContext<Article>
+  } as WithContext<any>
 
   return (
     <>

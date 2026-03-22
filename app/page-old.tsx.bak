@@ -97,7 +97,7 @@ export default function Home() {
     },
     total: 3092.25,
     invoice: {
-      number: 'INV-001',
+      invoiceNumber: 'INV-001',
       issueDate: '2024-01-15',
       dueDate: '2024-02-15',
     },

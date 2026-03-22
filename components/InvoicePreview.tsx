@@ -103,7 +103,7 @@ export default function InvoicePreview({
 
   const updateDiscount = (field: string, value: number | string) => {
     const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
-    const discount = {
+    const discount: any = {
       ...editedData.discount,
       [field]: numValue,
     };
@@ -157,14 +157,15 @@ export default function InvoicePreview({
     if (editedData.discount) {
       taxableAmount -= editedData.discount.amount;
     }
-    tax.amount = taxableAmount * (tax.rate / 100);
+    const safeTax: any = tax;
+    safeTax.amount = taxableAmount * (safeTax.rate / 100);
 
     // Recalculate total
-    const newTotal = taxableAmount + tax.amount;
+    const newTotal = taxableAmount + (tax as any).amount;
 
     setEditedData({
       ...editedData,
-      tax,
+      tax: tax as any,
       total: newTotal,
     });
   };
@@ -460,8 +461,8 @@ export default function InvoicePreview({
                       value={editedData.discount.percent !== undefined ? 'percent' : 'fixed'}
                       onChange={(e) => {
                         const isPercent = e.target.value === 'percent';
-                        updateDiscount('percent', isPercent ? 10 : undefined);
-                        updateDiscount('amount', isPercent ? undefined : 0);
+                        updateDiscount('percent', isPercent ? 10 : (undefined as any));
+                        updateDiscount('amount', isPercent ? (undefined as any) : 0);
                       }}
                       className="w-full mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
                     >
@@ -476,7 +477,7 @@ export default function InvoicePreview({
                       value={editedData.discount.percent !== undefined ? editedData.discount.percent : editedData.discount.amount}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value) || 0;
-                        if (editedData.discount.percent !== undefined) {
+                        if (editedData.discount && editedData.discount.percent !== undefined) {
                           updateDiscount('percent', value);
                         } else {
                           updateDiscount('amount', value);

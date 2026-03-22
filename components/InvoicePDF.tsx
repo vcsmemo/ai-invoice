@@ -111,6 +111,12 @@ const styles = StyleSheet.create({
     color: '#111827',
     marginBottom: 4,
   },
+  companyName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 4,
+  },
   company: {
     fontSize: 11,
     color: '#6B7280',
