@@ -1,10 +1,25 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase client for client-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+let supabaseInstance: any = null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export function getSupabase() {
+  if (!supabaseInstance) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    // Use dummy values during build to prevent crash
+    const url = supabaseUrl || 'https://placeholder.supabase.co';
+    const key = supabaseAnonKey || 'placeholder';
+    supabaseInstance = createClient(url, key);
+  }
+  return supabaseInstance;
+}
+
+// For backward compatibility
+export const supabase = new Proxy({} as any, {
+  get: (target, prop, receiver) => {
+    return Reflect.get(getSupabase(), prop, receiver);
+  }
+});
 
 // Supabase client for server-side operations (with service role key)
 let supabaseAdminInstance: any = null;
@@ -13,7 +28,10 @@ export function getSupabaseAdmin() {
   if (!supabaseAdminInstance) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
     const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-    supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+    // Use dummy values during build to prevent crash
+    const url = supabaseUrl || 'https://placeholder.supabase.co';
+    const key = supabaseServiceRoleKey || 'placeholder';
+    supabaseAdminInstance = createClient(url, key, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
