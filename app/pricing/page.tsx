@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { Check, CreditCard } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/stripe';
@@ -12,7 +12,7 @@ export default function PricingPage() {
 
   const handlePurchase = async (packageId: CreditPackage) => {
     if (!session?.user) {
-      window.location.href = '/api/auth/signin';
+      signIn();
       return;
     }
 

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FileText, LogOut, User, Settings } from 'lucide-react';
 import { useSession, signOut, signIn } from 'next-auth/react';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -25,6 +26,7 @@ export default function Navbar() {
         <Link href="/pricing" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
           $ cd /pricing
         </Link>
+        <ThemeToggle />
 
         {status === 'loading' ? (
           <div className="w-7 h-7 bg-muted rounded-full animate-pulse"></div>

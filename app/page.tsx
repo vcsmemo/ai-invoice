@@ -171,32 +171,32 @@ function HomeContent() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-[rgb(17,17,17)] p-8 border border-[rgba(96,96,104,0.2)] rounded-[10px] hover:border-[rgb(217,145,120)]/30 transition-colors relative overflow-hidden group">
-            <div className="absolute top-4 right-4 text-xs text-[rgb(163,161,161)]/20 font-bold group-hover:text-[rgb(217,145,120)]/20 transition-colors">0x01</div>
-            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-[rgb(217,145,120)]">
-              <span className="text-[rgb(163,163,163)]">$</span> describe
+          <div className="bg-card p-8 border border-border rounded-[10px] hover:border-primary/30 transition-colors relative overflow-hidden group">
+            <div className="absolute top-4 right-4 text-[10px] text-muted-foreground/20 font-bold group-hover:text-primary/20 transition-colors">0x01</div>
+            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-primary">
+              <span className="text-muted-foreground">$</span> describe
             </h3>
-            <p className="text-sm text-[rgb(163,163,163)] leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed font-mono">
               Tell us what you did in plain English. AI extracts items and amounts.
             </p>
           </div>
 
-          <div className="bg-[rgb(17,17,17)] p-8 border border-[rgba(96,96,104,0.2)] rounded-[10px] hover:border-[rgb(217,145,120)]/30 transition-colors relative overflow-hidden group">
-            <div className="absolute top-4 right-4 text-xs text-[rgb(163,163,163)]/20 font-bold group-hover:text-[rgb(217,145,120)]/20 transition-colors">0x02</div>
-            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-[rgb(217,145,120)]">
-              <span className="text-[rgb(163,163,163)]">$</span> process --smart
+          <div className="bg-card p-8 border border-border rounded-[10px] hover:border-primary/30 transition-colors relative overflow-hidden group">
+            <div className="absolute top-4 right-4 text-[10px] text-muted-foreground/20 font-bold group-hover:text-primary/20 transition-colors">0x02</div>
+            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-primary">
+              <span className="text-muted-foreground">$</span> process --smart
             </h3>
-            <p className="text-sm text-[rgb(163,163,163)] leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed font-mono">
               Client details, invoice numbers, taxes — structured automatically.
             </p>
           </div>
 
-          <div className="bg-[rgb(17,17,17)] p-8 border border-[rgba(96,96,104,0.2)] rounded-[10px] hover:border-[rgb(217,145,120)]/30 transition-colors relative overflow-hidden group">
-            <div className="absolute top-4 right-4 text-xs text-[rgb(163,163,163)]/20 font-bold group-hover:text-[rgb(217,145,120)]/20 transition-colors">0x03</div>
-            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-[rgb(217,145,120)]">
-              <span className="text-[rgb(163,163,163)]">$</span> deploy --pdf
+          <div className="bg-card p-8 border border-border rounded-[10px] hover:border-primary/30 transition-colors relative overflow-hidden group">
+            <div className="absolute top-4 right-4 text-[10px] text-muted-foreground/20 font-bold group-hover:text-primary/20 transition-colors">0x03</div>
+            <h3 className="text-base font-bold mb-3 flex items-center gap-2 text-primary">
+              <span className="text-muted-foreground">$</span> deploy --pdf
             </h3>
-            <p className="text-sm text-[rgb(163,163,163)] leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed font-mono">
               Download as professional PDF or share a payment link. One click.
             </p>
           </div>

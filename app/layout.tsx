@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import SessionProvider from '@/components/SessionProvider'
+import { ThemeProvider } from '@/components/ThemeProvider'
 import SchemaOrg from '@/components/SchemaOrg'
 
 const mono = JetBrains_Mono({ 
@@ -101,10 +102,12 @@ export default function RootLayout({
         <SchemaOrg />
       </head>
       <body className="font-mono bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary">
-        <div className="fixed inset-0 grid-bg pointer-events-none z-0" />
-        <div className="relative z-10">
-          <SessionProvider>{children}</SessionProvider>
-        </div>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <div className="fixed inset-0 grid-bg pointer-events-none z-0" />
+          <div className="relative z-10">
+            <SessionProvider>{children}</SessionProvider>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   )

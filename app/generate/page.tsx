@@ -80,23 +80,23 @@ function GenerateContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white">
+    <div className="h-screen flex flex-col bg-background">
       <Navbar />
 
       {/* Simple Back Bar */}
-      <div className="border-b border-gray-200 px-6 py-3 flex items-center gap-4 bg-white">
-        <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+      <div className="border-b border-border px-6 py-3 flex items-center gap-4 bg-background">
+        <Link href="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
-        <div className="h-4 w-px bg-gray-200"></div>
-        <h1 className="text-sm font-medium text-gray-900">Generate Invoice</h1>
+        <div className="h-4 w-px bg-border"></div>
+        <h1 className="text-sm font-medium text-foreground">Generate Invoice</h1>
       </div>
 
       {/* Main Content - Split View */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Panel - Chat Input */}
-        <div className="w-1/2 min-w-[400px] border-r border-gray-200 flex flex-col">
+        <div className="w-1/2 min-w-[400px] border-r border-border flex flex-col bg-background">
           <ChatInterface
             onInvoiceGenerated={handleInvoiceGenerated}
             isLoading={isDownloading}
@@ -106,7 +106,7 @@ function GenerateContent() {
         </div>
 
         {/* Right Panel - Invoice Preview */}
-        <div className="w-1/2 flex flex-col bg-gray-50">
+        <div className="w-1/2 flex flex-col bg-muted/30">
           {invoiceData ? (
             <div className="flex-1 overflow-auto p-6">
               <InvoicePreview
@@ -119,9 +119,9 @@ function GenerateContent() {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-gray-400"
+                    className="w-8 h-8 text-muted-foreground"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -134,10 +134,10 @@ function GenerateContent() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-base font-semibold text-gray-900 mb-2">
+                <h3 className="text-base font-semibold text-foreground mb-2">
                   Start chatting
                 </h3>
-                <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                   Describe your work on the left and AI will create a professional invoice here
                 </p>
               </div>

@@ -48,10 +48,10 @@ function TemplatesContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#ededed] font-mono selection:bg-primary/30">
+    <div className="min-h-screen flex flex-col bg-background text-foreground font-mono selection:bg-primary/30">
       <Navbar />
 
-      <main className="pt-28 pb-20 px-6 max-w-7xl mx-auto">
+      <main className="pt-28 pb-20 px-6 max-w-7xl mx-auto flex-1">
         <div className="flex flex-col md:flex-row gap-12">
           {/* Sidebar */}
           <aside className="w-full md:w-64 flex-shrink-0 space-y-8">
@@ -64,8 +64,8 @@ function TemplatesContent() {
                     onClick={() => setActiveCategory(cat.id)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${
                       activeCategory === cat.id 
-                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(217,145,120,0.1)]' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent'
+                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -78,8 +78,8 @@ function TemplatesContent() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/5">
-              <div className="bg-primary/5 rounded-xl border border-primary/10 p-4">
+            <div className="pt-4 border-t border-border/50">
+              <div className="bg-primary/5 rounded-xl border border-primary/20 p-4">
                 <div className="flex items-center gap-2 text-primary mb-2">
                   <Zap className="w-3.5 h-3.5" />
                   <span className="text-[10px] font-bold uppercase tracking-widest">Pro Tip</span>
