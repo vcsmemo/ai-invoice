@@ -95,11 +95,22 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, user }) {
       if (session.user) {
-        // Fetch fresh user data from database
-        const dbUser = await getUserByEmail(session.user.email || '');
-        if (dbUser) {
-          session.user.id = dbUser.id;
-          session.user.credits_remaining = dbUser.credits_remaining;
+        try {
+          // Fetch fresh user data from database
+          const dbUser = await getUserByEmail(session.user.email || '');
+          if (dbUser) {
+            session.user.id = dbUser.id;
+            session.user.credits_remaining = dbUser.credits_remaining;
+          } else {
+            // Use data from token if database fetch fails
+            session.user.id = (user as any)?.id || session.user.email || 'unknown';
+            session.user.credits_remaining = (user as any)?.credits_remaining || 5;
+          }
+        } catch (error) {
+          console.error('[Auth] Error fetching user in session callback:', error);
+          // Set default values on error
+          session.user.id = (user as any)?.id || session.user.email || 'unknown';
+          session.user.credits_remaining = (user as any)?.credits_remaining || 5;
         }
       }
       return session;

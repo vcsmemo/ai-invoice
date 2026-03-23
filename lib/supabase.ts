@@ -342,22 +342,52 @@ export async function updateProfile(userId: string, updates: Partial<Omit<Profil
 }
 
 export async function getOrCreateProfile(userId: string): Promise<Profile> {
-  let profile = await getProfile(userId);
+  try {
+    let profile = await getProfile(userId);
 
-  if (!profile) {
-    profile = await createProfile(userId, {
+    if (!profile) {
+      console.log('[Profile] Creating new profile for user:', userId);
+
+      profile = await createProfile(userId, {
+        default_currency: 'USD',
+        default_tax_rate: 0,
+        invoice_prefix: 'INV',
+        payment_terms: 'Net 30',
+      });
+
+      if (!profile) {
+        console.warn('[Profile] Failed to create profile in database, using defaults');
+        // Return a default profile instead of throwing
+        profile = {
+          id: userId,
+          default_currency: 'USD',
+          default_tax_rate: 0,
+          invoice_prefix: 'INV',
+          payment_terms: 'Net 30',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      } else {
+        console.log('[Profile] Profile created successfully');
+      }
+    } else {
+      console.log('[Profile] Found existing profile');
+    }
+
+    return profile;
+  } catch (error) {
+    console.error('[Profile] Error in getOrCreateProfile:', error);
+    // Return a default profile on any error
+    return {
+      id: userId,
       default_currency: 'USD',
       default_tax_rate: 0,
       invoice_prefix: 'INV',
       payment_terms: 'Net 30',
-    });
-
-    if (!profile) {
-      throw new Error('Failed to create profile');
-    }
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
   }
-
-  return profile;
 }
 
 // Invoice status operations
