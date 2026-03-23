@@ -271,7 +271,8 @@ export async function getUserInvoices(userId: string): Promise<Invoice[]> {
 }
 
 export async function getInvoiceById(invoiceId: string): Promise<Invoice | null> {
-  const { data, error } = await supabase
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from('invoices')
     .select('*')
     .eq('id', invoiceId)
