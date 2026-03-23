@@ -35,6 +35,10 @@ function HomeContent() {
   };
 
   const handleDownload = async () => {
+    console.log('[handleDownload] FUNCTION CALLED!');
+    console.log('[handleDownload] session:', session);
+    console.log('[handleDownload] session.user:', session?.user);
+
     // Use either generated invoice or sample invoice
     const dataToDownload = invoiceData || sampleInvoice;
 
@@ -299,12 +303,18 @@ function HomeContent() {
 
               <div className="mt-5 text-center">
                 <button
-                  onClick={() => {
-                    console.log('[Page] Download button clicked, invoiceData:', invoiceData ? 'exists' : 'using sample');
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('[Page] Download button CLICKED!');
+                    console.log('[Page] Session:', session ? 'exists' : 'null');
+                    console.log('[Page] Session user:', session?.user ? 'exists' : 'null');
+                    console.log('[Page] isDownloading:', isDownloading);
+                    console.log('[Page] invoiceData:', invoiceData ? 'exists' : 'null');
                     handleDownload();
                   }}
                   disabled={isDownloading}
-                  className="btn-primary"
+                  className="btn-primary cursor-pointer"
                 >
                   {isDownloading ? 'Downloading...' : (invoiceData ? 'Download Generated PDF' : 'Download Sample PDF')}
                 </button>
