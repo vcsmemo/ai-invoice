@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn, Mail, ArrowRight, X, Loader2, CheckCircle2 } from 'lucide-react';
 
-export default function SignInPage() {
+function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -292,5 +292,29 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SignInLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 bg-background">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[rgba(200,245,66,0.08)] rounded-full blur-[120px] pointer-events-none" />
+      </div>
+      <div className="relative z-10 flex items-center gap-3 text-muted-foreground">
+        <Loader2 className="w-6 h-6 animate-spin" />
+        <span>Loading...</span>
+      </div>
+    </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function SignInPageWrapper() {
+  return (
+    <Suspense fallback={<SignInLoading />}>
+      <SignInPage />
+    </Suspense>
   );
 }
