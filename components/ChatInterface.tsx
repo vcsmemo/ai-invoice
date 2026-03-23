@@ -63,7 +63,8 @@ export default function ChatInterface({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate invoice');
+        const errorData = await response.json();
+        throw new Error(errorData.details || errorData.error || 'Failed to generate invoice');
       }
 
       const data = await response.json();
@@ -89,7 +90,11 @@ export default function ChatInterface({
 
       const errorMessage: ChatMessage = {
         role: 'assistant',
+<<<<<<< HEAD
         content: errorText,
+=======
+        content: `Sorry, I had trouble generating that invoice.\n\n**Error Details:** ${error.message || 'Unknown error'}\n\nPlease check your Anthropic API key and limits.`,
+>>>>>>> 7676a8a (Fix AI and PDF download with comprehensive debugging)
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {

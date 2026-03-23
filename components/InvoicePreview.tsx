@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Edit2, Download, FileText, Plus, Trash2, ChevronDown } from 'lucide-react';
 import { InvoiceData } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/currencies';
@@ -21,6 +21,11 @@ export default function InvoicePreview({
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<InvoiceData>(invoiceData);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Sync internal state when prop changes (e.g. from AI chat)
+  useEffect(() => {
+    setEditedData(invoiceData);
+  }, [invoiceData]);
 
   const handleSave = () => {
     onEdit?.(editedData);
