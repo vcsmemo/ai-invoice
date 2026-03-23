@@ -201,11 +201,30 @@ Return ONLY the JSON, no additional text. Ensure all numbers are valid numbers, 
       jsonString = content.text;
     }
 
-    // Clean up JSON string (remove markdown code blocks if present)
-    jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    console.log('AI Raw Response:', jsonString.substring(0, 100) + '...');
+
+    // Robust JSON extraction
+    const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('No JSON found in AI response');
+      throw new Error('No valid JSON found in AI response');
+    }
+    
+    jsonString = jsonMatch[0];
 
     // Parse JSON
-    const invoiceData = JSON.parse(jsonString) as InvoiceData;
+    let invoiceData: InvoiceData;
+    try {
+      invoiceData = JSON.parse(jsonString) as InvoiceData;
+    } catch (e) {
+      console.error('Failed to parse AI JSON:', jsonString);
+      throw new Error('Invalid JSON format from AI');
+    }
+
+    // Ensure items is an array
+    if (!invoiceData.items || !Array.isArray(invoiceData.items)) {
+      invoiceData.items = [];
+    }
 
     // Validate and calculate totals
     invoiceData.items.forEach((item) => {
@@ -257,9 +276,15 @@ Return ONLY the JSON, no additional text. Ensure all numbers are valid numbers, 
     }
 
     return invoiceData;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating invoice:', error);
-    throw new Error('Failed to generate invoice from AI');
+    if (error.status === 401) {
+      throw new Error('Invalid Anthropic API Key. Please check your .env.local file.');
+    }
+    if (error.status === 429) {
+      throw new Error('Anthropic API rate limit exceeded. Please try again in a moment.');
+    }
+    throw new Error('Failed to generate invoice from AI: ' + (error.message || 'Unknown error'));
   }
 }
 
