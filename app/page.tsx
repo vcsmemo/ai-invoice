@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
@@ -16,7 +16,7 @@ const countryToCurrency: { [key: string]: string } = {
   DE: 'EUR',
 };
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const country = searchParams.get('country') || 'US';
   const currency = countryToCurrency[country] || 'USD';
@@ -254,5 +254,13 @@ export default function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
