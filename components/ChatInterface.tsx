@@ -105,7 +105,7 @@ export default function ChatInterface({
           <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
         </div>
-        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+        <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
           ai-invoice-terminal --prompt
         </div>
         <div className="w-10" /> {/* Spacer */}
@@ -136,14 +136,14 @@ export default function ChatInterface({
                   : 'bg-muted/50 text-foreground rounded-[8px] border border-border'
               }`}
             >
-              <div className="flex items-center gap-2 mb-1 text-[10px] opacity-70 font-bold uppercase tracking-tighter">
+              <div className="flex items-center gap-2 mb-1 text-xs opacity-70 font-bold uppercase tracking-tighter">
                 {message.role === 'assistant' ? (
                   <><span>$</span> ai-assistant</>
                 ) : (
                   <><span>$</span> user-request</>
                 )}
               </div>
-              <p className="text-xs whitespace-pre-wrap leading-relaxed">{message.content}</p>
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
             </div>
           </div>
         ))}
@@ -176,7 +176,7 @@ export default function ChatInterface({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Describe work... (cmd+enter to send)"
-              className="w-full px-4 py-3 bg-background border border-border rounded-[8px] resize-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-xs font-mono text-foreground placeholder:text-muted-foreground"
+              className="w-full px-4 py-3 bg-background border border-border rounded-[8px] resize-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-sm font-mono text-foreground placeholder:text-muted-foreground"
               rows={2}
               disabled={isGenerating || isLoading}
             />
@@ -193,7 +193,7 @@ export default function ChatInterface({
             )}
           </button>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-2 text-center font-mono opacity-50 uppercase tracking-widest">
+        <p className="text-xs text-muted-foreground mt-2 text-center font-mono opacity-50 uppercase tracking-widest">
           ai --parser --active
         </p>
       </div>

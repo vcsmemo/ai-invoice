@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const userId = session?.user?.id;
 
     const body = await request.json();
     const { messages, userContext } = body as {
@@ -31,7 +28,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user profile to include in invoice generation
-    const profile = await getOrCreateProfile(session.user.id);
+    let profile: any = userId ? await getOrCreateProfile(userId) : null;
+
+    // Default profile for anonymous users
+    if (!profile) {
+      profile = {
+        company_name: '',
+        address: '',
+        phone: '',
+        website: '',
+        tax_id: '',
+        logo_url: '',
+        payment_instructions: '',
+        default_tax_rate: 0,
+        default_currency: userContext?.currency || 'USD',
+        payment_terms: 'Net 30',
+        invoice_prefix: 'INV',
+      };
+    }
 
     // Merge user context with profile data
     const enhancedContext = {

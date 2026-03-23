@@ -17,13 +17,13 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-6">
-        <Link href="#how" className="text-xs font-bold text-[rgb(163,163,163)] hover:text-[rgb(217,145,120)] transition-colors uppercase tracking-widest">
+        <Link href="#how" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
           $ ls --how-it-works
         </Link>
-        <Link href="/templates" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
+        <Link href="/templates" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
           $ cd /templates
         </Link>
-        <Link href="/pricing" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
+        <Link href="/pricing" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
           $ cd /pricing
         </Link>
         <ThemeToggle />
@@ -32,14 +32,14 @@ export default function Navbar() {
           <div className="w-7 h-7 bg-muted rounded-full animate-pulse"></div>
         ) : session?.user ? (
           <div className="flex items-center gap-4">
-            <Link href="/generate" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
+            <Link href="/generate" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
               Generate
             </Link>
-            <Link href="/my-invoices" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
+            <Link href="/my-invoices" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
               My Invoices
             </Link>
-            <Link href="/settings" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 uppercase tracking-widest">
-              <Settings className="w-3 h-3" />
+            <Link href="/settings" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 uppercase tracking-widest">
+              <Settings className="w-4 h-4" />
               Config
             </Link>
             <div className="flex items-center gap-3 border-l border-border pl-4">
@@ -72,7 +72,7 @@ export default function Navbar() {
         ) : (
           <button
             onClick={() => signIn()}
-            className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all glow-accent"
+            className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all glow-accent"
           >
             $ sudo login
           </button>

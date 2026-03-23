@@ -130,9 +130,9 @@ function HomeContent() {
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card text-xs text-muted-foreground mb-10">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            V1.0.0 · <span className="text-primary">Ready to use</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-sm text-muted-foreground mb-10">
+            <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+            V1.0.0 · <span className="text-primary font-bold">Ready to use</span>
           </div>
 
           {/* Headline */}
@@ -142,7 +142,7 @@ function HomeContent() {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed font-mono">
+          <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed font-mono">
             Tell us what you did, who it&apos;s for, and how much. AI handles the rest.
           </p>
 
@@ -150,12 +150,12 @@ function HomeContent() {
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
-              className="group px-6 py-3 bg-primary text-primary-foreground rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
+              className="group px-8 py-4 bg-primary text-primary-foreground rounded-[10px] font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
             >
               $ start-generater --free
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <p className="text-xs text-muted-foreground">Natural language → Professional PDF</p>
+            <p className="text-sm text-muted-foreground">Natural language → Professional PDF</p>
           </div>
         </div>
       </section>
