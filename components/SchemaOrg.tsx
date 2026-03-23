@@ -6,7 +6,7 @@ export default function WebPage() {
     '@type': 'WebApplication',
     name: 'AI Invoice Generator',
     description: 'Create professional invoices in seconds with AI-powered automation',
-    url: 'https://yourdomain.com',
+    url: 'https://www.aiinvoicegenerators.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Any',
     offers: {

@@ -191,7 +191,7 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_URL=https://invoice-ai.vercel.app
 
 # 如果用自定义域名
-NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_URL=https://www.aiinvoicegenerators.com
 ```
 
 ---
@@ -251,7 +251,7 @@ http://localhost:3000/api/auth/callback/google
 ```
 https://invoice-ai.vercel.app/api/auth/callback/google
 或
-https://yourdomain.com/api/auth/callback/google
+https://www.aiinvoicegenerators.com/api/auth/callback/google
 ```
 
 **7. 创建并保存**
@@ -327,7 +327,7 @@ STRIPE_SECRET_KEY=sk_live_51xxxxx
 ```
 Endpoint URL:
 - 测试: http://localhost:3000/api/stripe/webhook
-- 生产: https://yourdomain.com/api/stripe/webhook
+- 生产: https://www.aiinvoicegenerators.com/api/stripe/webhook
 
 Events to listen to:
 选择这些事件：
@@ -428,8 +428,8 @@ NEXT_PUBLIC_SITE_URL=https://invoice-ai.vercel.app
 
 或自定义域名：
 ```bash
-NEXTAUTH_URL=https://yourdomain.com
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXTAUTH_URL=https://www.aiinvoicegenerators.com
+NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
 ```
 
 ---
@@ -498,8 +498,8 @@ Error: Invalid nextauth url
 **解决方法**：
 ```bash
 # 确保没有尾部斜杠
-❌ NEXTAUTH_URL=https://yourdomain.com/
-✅ NEXTAUTH_URL=https://yourdomain.com
+❌ NEXTAUTH_URL=https://www.aiinvoicegenerators.com/
+✅ NEXTAUTH_URL=https://www.aiinvoicegenerators.com
 ```
 
 ### 错误 2: Google OAuth 回调错误
@@ -513,7 +513,7 @@ Error: redirect_uri_mismatch
 1. 检查 Google Console 中的授权重定向 URI
 2. 确保完全匹配：
    ```
-   https://yourdomain.com/api/auth/callback/google
+   https://www.aiinvoicegenerators.com/api/auth/callback/google
    ```
 3. 不要有多余的斜杠
 

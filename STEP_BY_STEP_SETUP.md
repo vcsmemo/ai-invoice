@@ -616,7 +616,7 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_URL=https://invoice-ai.vercel.app
 
 # 或自定义域名
-NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_URL=https://www.aiinvoicegenerators.com
 ```
 
 ### ⚠️ 2. 更新 Google OAuth 回调 URL

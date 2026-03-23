@@ -73,27 +73,27 @@ public/
 ## 🔧 部署前需要更新的配置
 
 ### 1. 更新域名
-在以下文件中替换 `yourdomain.com`:
+在以下文件中替换 `www.aiinvoicegenerators.com`:
 
 **app/sitemap.ts**:
 ```typescript
-const baseUrl = 'https://yourdomain.com'
+const baseUrl = 'https://www.aiinvoicegenerators.com'
 ```
 
 **public/robots.txt**:
 ```
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://www.aiinvoicegenerators.com/sitemap.xml
 ```
 
 **app/layout.tsx**:
 ```typescript
-url: 'https://yourdomain.com',
+url: 'https://www.aiinvoicegenerators.com',
 ```
 
 ### 2. 更新环境变量
 创建 `.env.local`:
 ```bash
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
 ```
 
 ### 3. Google Search Console（可选）

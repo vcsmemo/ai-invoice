@@ -53,7 +53,7 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 NEXTAUTH_SECRET=your_nextauth_secret
-NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_URL=https://www.aiinvoicegenerators.com
 
 # Stripe
 STRIPE_SECRET_KEY=your_stripe_secret_key
@@ -68,7 +68,7 @@ GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 # 可选
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
 ```
 
 ### 3. Google OAuth 配置 ⚠️ **必须更新**
@@ -76,7 +76,7 @@ NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 1. 访问 [Google Cloud Console](https://console.cloud.google.com/)
 2. 更新授权重定向 URI：
    ```
-   https://yourdomain.com/api/auth/callback/google
+   https://www.aiinvoicegenerators.com/api/auth/callback/google
    ```
 3. 重新生成 Client Secret
 
@@ -85,7 +85,7 @@ NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 1. 登录 Stripe Dashboard
 2. 添加 Webhook 端点：
    ```
-   https://yourdomain.com/api/stripe/webhook
+   https://www.aiinvoicegenerators.com/api/stripe/webhook
    ```
 3. 复制 Webhook Secret 到环境变量
 
@@ -118,7 +118,7 @@ public/icon-512.png           # 512x512
 - `app/layout.tsx` (line 36)
 - 环境变量 `NEXT_PUBLIC_SITE_URL`
 
-**替换**: `yourdomain.com` → 实际域名
+**替换**: `www.aiinvoicegenerators.com` → 实际域名
 
 ### 3. Google Search Console（可选）
 1. 访问 https://search.google.com/search-console

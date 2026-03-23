@@ -373,7 +373,7 @@ git push -u origin main
    http://localhost:3000/api/auth/callback/google
 
    ⚠️ 部署后需要回来添加:
-   https://yourdomain.com/api/auth/callback/google
+   https://www.aiinvoicegenerators.com/api/auth/callback/google
    ```
 7. 点击 **"CREATE"**
 8. 复制 **Client ID** 和 **Client Secret** 到记事本：

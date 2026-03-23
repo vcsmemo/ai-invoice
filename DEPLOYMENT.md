@@ -29,7 +29,7 @@ In Vercel dashboard:
 Set these in Vercel project settings:
 
 ```
-NEXT_PUBLIC_APP_URL=https://yourdomain.com
+NEXT_PUBLIC_APP_URL=https://www.aiinvoicegenerators.com
 ```
 
 ## Pre-deployment Checklist

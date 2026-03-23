@@ -92,7 +92,7 @@ ANTHROPIC_API_KEY=sk-ant-xxxxx
 
 # NextAuth
 NEXTAUTH_SECRET=your_random_secret_string
-NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_URL=https://www.aiinvoicegenerators.com
 
 # Google OAuth
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
@@ -107,7 +107,7 @@ STRIPE_WEBHOOK_SECRET=whsec_xxxxx
 RESEND_API_KEY=re_xxxxx
 
 # 可选
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
 ```
 
 ### 如何获取这些值？
@@ -222,7 +222,7 @@ https://invoice-ai.vercel.app
 1. **在 Vercel 中添加域名**
    ```
    Project Settings → Domains → Add Domain
-   输入: yourdomain.com
+   输入: www.aiinvoicegenerators.com
    ```
 
 2. **配置 DNS**
@@ -236,8 +236,8 @@ https://invoice-ai.vercel.app
 
 4. **更新环境变量**
    ```
-   NEXTAUTH_URL=https://yourdomain.com
-   NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+   NEXTAUTH_URL=https://www.aiinvoicegenerators.com
+   NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
    ```
 
 ---
@@ -259,7 +259,7 @@ https://invoice-ai.vercel.app
 
 3. **添加授权重定向 URI**
    ```
-   https://yourdomain.com/api/auth/callback/google
+   https://www.aiinvoicegenerators.com/api/auth/callback/google
    ```
 
 4. **保存**
@@ -272,7 +272,7 @@ https://invoice-ai.vercel.app
 
 ```bash
 1. 访问首页
-   https://yourdomain.com
+   https://www.aiinvoicegenerators.com
 
 2. 测试登录
    点击 "Sign In" → Google

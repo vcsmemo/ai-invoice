@@ -112,7 +112,7 @@ ANTHROPIC_API_KEY=
 
 # NextAuth
 NEXTAUTH_SECRET=
-NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_URL=https://www.aiinvoicegenerators.com
 
 # Google OAuth
 GOOGLE_CLIENT_ID=
@@ -127,7 +127,7 @@ STRIPE_WEBHOOK_SECRET=
 RESEND_API_KEY=
 
 # 可选
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
 ```
 
 **在哪里获取这些值？**:
@@ -145,7 +145,7 @@ NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 3. 选择您的 OAuth 2.0 客户端
 4. 添加授权重定向 URI:
    ```
-   https://yourdomain.com/api/auth/callback/google
+   https://www.aiinvoicegenerators.com/api/auth/callback/google
    ```
 5. 保存
 
@@ -158,7 +158,7 @@ NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 2. Developers → Webhooks
 3. 添加端点:
    ```
-   https://yourdomain.com/api/stripe/webhook
+   https://www.aiinvoicegenerators.com/api/stripe/webhook
    ```
 4. 复制 Webhook Secret
 5. 添加到环境变量 `STRIPE_WEBHOOK_SECRET`

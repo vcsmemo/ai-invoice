@@ -123,7 +123,7 @@ public/
 ### ⚙️ 更新配置（部署前）
 
 #### 1. 更新域名
-在以下文件中替换 `yourdomain.com`：
+在以下文件中替换 `www.aiinvoicegenerators.com`：
 
 ```bash
 app/sitemap.ts (line 4)
@@ -134,7 +134,7 @@ app/layout.tsx (line 36)
 #### 2. 添加环境变量
 ```bash
 # .env.local 或 Vercel Dashboard
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXT_PUBLIC_SITE_URL=https://www.aiinvoicegenerators.com
 ```
 
 #### 3. 更新 Twitter handle
@@ -293,7 +293,7 @@ creator: '@yourhandle',  // 改成您的 Twitter
    - 放入 public/ 目录
 
 2. ⭐ 更新域名配置（2分钟）
-   - 替换所有 "yourdomain.com"
+   - 替换所有 "www.aiinvoicegenerators.com"
    - 设置 NEXT_PUBLIC_SITE_URL
 
 ### 部署后做（第1周）：
