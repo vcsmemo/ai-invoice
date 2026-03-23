@@ -6,13 +6,17 @@ import { createUser, getUserByEmail } from './supabase';
 
 // Get the app URL from environment or construct from VERCEL_URL
 const getAppUrl = () => {
-  if (process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL;
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return 'http://localhost:3000';
+  const url = process.env.NEXTAUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+  console.log('[NextAuth] App URL configured:', url);
+  console.log('[NextAuth] Environment:', {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    VERCEL_URL: process.env.VERCEL_URL,
+    NODE_ENV: process.env.NODE_ENV,
+  });
+
+  return url;
 };
 
 export const authOptions: NextAuthOptions = {

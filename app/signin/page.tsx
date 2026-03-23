@@ -20,7 +20,19 @@ function SignInPage() {
   useEffect(() => {
     const error = searchParams.get('error');
     if (error) {
-      setError('Authentication failed. Please try again.');
+      console.log('[SignIn] Error from OAuth:', error);
+      // Provide specific error messages
+      const errorMessages: { [key: string]: string } = {
+        'OAuthSignin': 'Error in constructing OAuth authorization URL',
+        'OAuthCallback': 'Error in handling OAuth callback',
+        'OAuthCreateAccount': 'Could not create user account',
+        'EmailCreateAccount': 'Could not create email user',
+        'Callback': 'Error in OAuth callback',
+        'OAuthAccountNotLinked': 'Email already associated with another account',
+        'SessionRequired': 'Please sign in to access this page',
+        'Default': 'Authentication failed. Please try again.',
+      };
+      setError(errorMessages[error] || errorMessages['Default']);
     }
   }, [searchParams]);
 

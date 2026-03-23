@@ -34,7 +34,7 @@ export async function GET(
     console.log('[PDF API] Converting to buffer...');
     const pdfBytes = await pdfDoc.toBuffer();
 
-    console.log('[PDF API] PDF generated, size:', pdfBytes.length, 'bytes');
+    console.log('[PDF API] PDF generated, size:', (pdfBytes as any).length, 'bytes');
 
     // Return PDF as downloadable file
     return new NextResponse(pdfBytes as any, {
