@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FileText, LogOut, User, Settings } from 'lucide-react';
-import { useSession, signOut, signIn } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { ThemeToggle } from './ThemeToggle';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between bg-background/80 backdrop-blur-xl border-b border-border">
@@ -71,7 +73,7 @@ export default function Navbar() {
           </div>
         ) : (
           <button
-            onClick={() => signIn(undefined, { callbackUrl: window.location.pathname })}
+            onClick={() => router.push(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`)}
             className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all glow-accent"
           >
             $ sudo login

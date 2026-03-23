@@ -1,18 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Check, CreditCard } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/stripe';
 
 export default function PricingPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const handlePurchase = async (packageId: CreditPackage) => {
     if (!session?.user) {
-      signIn(undefined, { callbackUrl: '/pricing' });
+      router.push('/signin?callbackUrl=/pricing');
       return;
     }
 

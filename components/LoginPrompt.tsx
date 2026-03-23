@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { LogIn, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -22,7 +22,7 @@ export default function LoginPrompt({ show, onClose }: LoginPromptProps) {
   if (!show || session) return null;
 
   const handleSignIn = () => {
-    signIn(undefined, { callbackUrl: window.location.pathname });
+    window.location.href = `/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
     onClose();
   };
 
