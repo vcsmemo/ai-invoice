@@ -25,19 +25,16 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
     }),
-    EmailProvider({
-      server: process.env.RESEND_API_KEY ? {
-        host: process.env.RESEND_API_HOST || 'https://api.resend.com',
-        auth: process.env.RESEND_API_KEY,
-        secure: true,
-      } : '',
-      from: process.env.EMAIL_FROM || 'noreply@aiinvoicegenerators.com',
-    }),
+    // EmailProvider temporarily disabled due to 500 errors
+    // EmailProvider({
+    //   server: process.env.RESEND_API_KEY ? {
+    //     host: process.env.RESEND_API_HOST || 'https://api.resend.com',
+    //     auth: process.env.RESEND_API_KEY,
+    //     secure: true,
+    //   } : '',
+    //   from: process.env.EMAIL_FROM || 'noreply@aiinvoicegenerators.com',
+    // }),
   ],
-  pages: {
-    signIn: '/signin',
-    error: '/signin',
-  },
   callbacks: {
     async signIn({ user, account, profile }) {
       if (!user.email) {

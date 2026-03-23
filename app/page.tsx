@@ -46,7 +46,8 @@ function HomeContent() {
 
     // Check if user is logged in
     if (!session?.user) {
-      console.log('[PDF Download] User not logged in, showing login prompt');
+      console.log('[PDF Download] User not logged in');
+      alert('Please sign in to download invoices. You\'ll get 5 free credits to start!');
       setShowLoginPrompt(true);
       return;
     }
