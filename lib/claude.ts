@@ -193,7 +193,7 @@ IMPORTANT:
 
 Return ONLY the JSON, no additional text. Ensure all numbers are valid numbers, not strings.`;
 
-    const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+    const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
     console.log('[AI] Using model:', model);
 
     const response = await getAnthropic().messages.create({
@@ -326,7 +326,7 @@ Keep responses concise and friendly. If users want to generate an invoice, guide
       { role: 'user', content: message },
     ];
 
-    const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+    const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
 
     const response = await getAnthropic().messages.create({
       model: model,

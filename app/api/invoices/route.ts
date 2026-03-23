@@ -13,18 +13,24 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[Invoice API] Creating invoice...');
+
     // Check authentication
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
+      console.log('[Invoice API] Authentication failed');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
+    console.log('[Invoice API] User authenticated:', session.user.id);
+
     // Check if user has credits
     const hasCredits = await checkUserCredits(session.user.id);
+    console.log('[Invoice API] User has credits:', hasCredits);
 
     if (!hasCredits) {
       return NextResponse.json(
@@ -38,14 +44,18 @@ export async function POST(request: NextRequest) {
     const { invoiceData } = body as { invoiceData: InvoiceData };
 
     if (!invoiceData) {
+      console.log('[Invoice API] Missing invoice data');
       return NextResponse.json(
         { error: 'Invoice data is required' },
         { status: 400 }
       );
     }
 
+    console.log('[Invoice API] Invoice data received, generating number...');
+
     // Generate invoice number using user-specific format
     const invoiceNumber = await generateInvoiceNumber(session.user.id);
+    console.log('[Invoice API] Invoice number generated:', invoiceNumber);
 
     // Create invoice in database
     const invoice = await createInvoice(
@@ -55,14 +65,18 @@ export async function POST(request: NextRequest) {
     );
 
     if (!invoice) {
+      console.error('[Invoice API] Failed to create invoice in database');
       return NextResponse.json(
         { error: 'Failed to create invoice' },
         { status: 500 }
       );
     }
 
+    console.log('[Invoice API] Invoice created in database:', invoice.id);
+
     // Deduct credit
     await updateUserCredits(session.user.id, -1);
+    console.log('[Invoice API] Credit deducted');
 
     return NextResponse.json({
       success: true,
@@ -70,7 +84,7 @@ export async function POST(request: NextRequest) {
       message: 'Invoice created successfully',
     });
   } catch (error) {
-    console.error('Error creating invoice:', error);
+    console.error('[Invoice API] Error creating invoice:', error);
     return NextResponse.json(
       { error: 'Failed to create invoice' },
       { status: 500 }

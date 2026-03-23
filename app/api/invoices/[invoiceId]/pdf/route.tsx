@@ -11,13 +11,17 @@ export async function GET(
 ) {
   try {
     const invoiceId = params.invoiceId;
+    console.log('[PDF API] Generating PDF for invoice:', invoiceId);
 
     // Fetch invoice from database
     const invoice = await getInvoiceById(invoiceId);
 
     if (!invoice) {
+      console.error('[PDF API] Invoice not found:', invoiceId);
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }
+
+    console.log('[PDF API] Invoice found, generating PDF document...');
 
     // Generate PDF
     const pdfDoc = pdf(
@@ -27,7 +31,10 @@ export async function GET(
       />
     );
 
+    console.log('[PDF API] Converting to buffer...');
     const pdfBytes = await pdfDoc.toBuffer();
+
+    console.log('[PDF API] PDF generated, size:', pdfBytes.length, 'bytes');
 
     // Return PDF as downloadable file
     return new NextResponse(pdfBytes as any, {
@@ -39,7 +46,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error('[PDF API] Error generating PDF:', error);
     return NextResponse.json(
       { error: 'Failed to generate PDF' },
       { status: 500 }

@@ -35,16 +35,24 @@ function HomeContent() {
   };
 
   const handleDownload = async () => {
-    if (!invoiceData) return;
+    if (!invoiceData) {
+      console.error('[PDF Download] No invoice data available');
+      return;
+    }
 
     // Check if user is logged in
     if (!session?.user) {
+      console.log('[PDF Download] User not logged in, showing login prompt');
       setShowLoginPrompt(true);
       return;
     }
 
+    console.log('[PDF Download] Starting download process for invoice:', invoiceData);
     setIsDownloading(true);
+
     try {
+      // Step 1: Create invoice
+      console.log('[PDF Download] Step 1: Creating invoice...');
       const response = await fetch('/api/invoices', {
         method: 'POST',
         headers: {
@@ -53,8 +61,11 @@ function HomeContent() {
         body: JSON.stringify({ invoiceData }),
       });
 
+      console.log('[PDF Download] Create invoice response status:', response.status);
+
       if (!response.ok) {
         const data = await response.json();
+        console.error('[PDF Download] Create invoice failed:', data);
         if (response.status === 401) {
           setShowLoginPrompt(true);
           return;
@@ -67,12 +78,33 @@ function HomeContent() {
       }
 
       const result = await response.json();
-      const pdfResponse = await fetch(`/api/invoices/${result.invoice.id}/pdf`);
-      if (!pdfResponse.ok) {
-        throw new Error('Failed to generate PDF');
+      console.log('[PDF Download] Invoice created successfully:', result);
+
+      if (!result.invoice?.id) {
+        throw new Error('Invalid response: missing invoice ID');
       }
 
+      // Step 2: Generate PDF
+      console.log('[PDF Download] Step 2: Generating PDF for invoice:', result.invoice.id);
+      const pdfResponse = await fetch(`/api/invoices/${result.invoice.id}/pdf`);
+
+      console.log('[PDF Download] PDF generation response status:', pdfResponse.status);
+
+      if (!pdfResponse.ok) {
+        const errorData = await pdfResponse.json();
+        console.error('[PDF Download] PDF generation failed:', errorData);
+        throw new Error(errorData.error || 'Failed to generate PDF');
+      }
+
+      // Step 3: Download PDF
+      console.log('[PDF Download] Step 3: Downloading PDF blob...');
       const blob = await pdfResponse.blob();
+      console.log('[PDF Download] PDF blob size:', blob.size, 'bytes');
+
+      if (blob.size === 0) {
+        throw new Error('Generated PDF is empty');
+      }
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -81,8 +113,10 @@ function HomeContent() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+
+      console.log('[PDF Download] PDF downloaded successfully');
     } catch (error) {
-      console.error('Error downloading PDF:', error);
+      console.error('[PDF Download] Error:', error);
       alert(error instanceof Error ? error.message : 'Failed to download PDF. Please try again.');
     } finally {
       setIsDownloading(false);
