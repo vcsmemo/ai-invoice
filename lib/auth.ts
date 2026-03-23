@@ -3,13 +3,35 @@ import GoogleProvider from 'next-auth/providers/google';
 import { supabase } from './supabase';
 import { createUser, getUserByEmail } from './supabase';
 
+// Get the app URL from environment or construct from VERCEL_URL
+const getAppUrl = () => {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return 'http://localhost:3000';
+};
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
   ],
+  pages: {
+    signIn: '/generate',
+    error: '/generate',
+  },
   callbacks: {
     async signIn({ user, account, profile }) {
       if (!user.email) return false;
@@ -66,4 +88,8 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // Explicitly set the URL for NextAuth to avoid redirect_uri_mismatch
+  ...(process.env.NEXTAUTH_URL || process.env.VERCEL_URL ? {
+    url: getAppUrl(),
+  } : {}),
 };
