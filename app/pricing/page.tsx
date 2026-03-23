@@ -12,7 +12,7 @@ export default function PricingPage() {
 
   const handlePurchase = async (packageId: CreditPackage) => {
     if (!session?.user) {
-      signIn();
+      signIn(undefined, { callbackUrl: '/pricing' });
       return;
     }
 

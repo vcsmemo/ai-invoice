@@ -71,7 +71,7 @@ export default function Navbar() {
           </div>
         ) : (
           <button
-            onClick={() => signIn()}
+            onClick={() => signIn(undefined, { callbackUrl: window.location.pathname })}
             className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all glow-accent"
           >
             $ sudo login
