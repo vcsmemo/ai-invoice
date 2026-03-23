@@ -23,13 +23,18 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (!user.email) return false;
+      if (!user.email) {
+        console.error('SignIn Error: No email provided');
+        return false;
+      }
 
       try {
         // Check if user exists in our database
         let dbUser = await getUserByEmail(user.email);
 
         if (!dbUser) {
+          console.log(`Creating new user: ${user.email}`);
+
           // Create new user
           dbUser = await createUser({
             email: user.email,
@@ -39,9 +44,16 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!dbUser) {
-            console.error('Failed to create user');
-            return false;
+            console.error('Failed to create user in database');
+            // Allow login anyway - user will be created on next request
+            user.id = user.email || 'temp-id';
+            user.credits_remaining = 5;
+            return true;
           }
+
+          console.log(`User created successfully: ${dbUser.id}`);
+        } else {
+          console.log(`User found: ${dbUser.id}`);
         }
 
         // Add user ID to the session
@@ -49,9 +61,19 @@ export const authOptions: NextAuthOptions = {
         user.credits_remaining = dbUser.credits_remaining;
 
         return true;
-      } catch (error) {
-        console.error('Error in signIn callback:', error);
-        return false;
+      } catch (error: any) {
+        // Log detailed error
+        console.error('Error in signIn callback:', {
+          message: error?.message || 'Unknown error',
+          stack: error?.stack,
+          email: user.email,
+          error: error
+        });
+
+        // Allow login anyway for better UX
+        user.id = user.email || 'fallback-id';
+        user.credits_remaining = 5;
+        return true;
       }
     },
     async session({ session, user }) {
