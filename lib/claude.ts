@@ -6,10 +6,18 @@ let anthropicInstance: Anthropic | null = null;
 export function getAnthropic() {
   if (!anthropicInstance) {
     const baseURL = process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com';
+    console.log('[Anthropic] Initializing with:', {
+      baseURL,
+      hasApiKey: !!process.env.ANTHROPIC_API_KEY,
+      apiKeyPrefix: process.env.ANTHROPIC_API_KEY?.substring(0, 10) + '...',
+    });
+
     anthropicInstance = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY || '',
       baseURL: baseURL,
     });
+
+    console.log('[Anthropic] Client created successfully');
   }
   return anthropicInstance;
 }
@@ -185,8 +193,11 @@ IMPORTANT:
 
 Return ONLY the JSON, no additional text. Ensure all numbers are valid numbers, not strings.`;
 
+    const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+    console.log('[AI] Using model:', model);
+
     const response = await getAnthropic().messages.create({
-      model: 'claude-3-5-haiku-20241022',
+      model: model,
       max_tokens: 2000,
       system: systemPrompt,
       messages: messages.map((msg) => ({
@@ -315,8 +326,10 @@ Keep responses concise and friendly. If users want to generate an invoice, guide
       { role: 'user', content: message },
     ];
 
+    const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+
     const response = await getAnthropic().messages.create({
-      model: 'claude-3-5-haiku-20241022',
+      model: model,
       max_tokens: 1000,
       system: systemPrompt,
       messages: messages.map((msg) => ({

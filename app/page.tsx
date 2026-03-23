@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, CheckCircle2, TrendingUp } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import InvoicePreview from '@/components/InvoicePreview';
 import LoginPrompt from '@/components/LoginPrompt';
@@ -136,85 +136,66 @@ function HomeContent() {
       <LoginPrompt show={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
 
       {/* Hero Section */}
-      <section className="min-h-[80vh] flex flex-col justify-center items-center px-6 pt-28 pb-16 relative overflow-hidden">
+      <section className="min-h-[80vh] flex flex-col justify-center px-6 pt-28 pb-16 relative overflow-hidden">
         {/* Ambient glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[rgba(200,245,66,0.12)] rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-sm text-muted-foreground mb-10">
-            <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="font-semibold">12,847 invoices generated this month</span> · <span className="text-primary font-bold">Join 3,254+ freelancers</span>
-          </div>
+        <div className="relative z-10 w-full max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Content */}
+            <div className="text-center lg:text-left">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-sm text-muted-foreground mb-10">
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="font-semibold">12,847 invoices generated this month</span> · <span className="text-primary font-bold">Join 3,254+ freelancers</span>
+              </div>
 
-          {/* Headline */}
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5 max-w-4xl mx-auto tracking-tight text-foreground">
-            $ ai --generate<br />
-            <span className="text-primary">invoice</span> --now
-          </h1>
+              {/* Headline */}
+              <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5 tracking-tight text-foreground">
+                $ ai --generate<br />
+                <span className="text-primary">invoice</span> --now
+              </h1>
 
-          {/* Subheadline */}
-          <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed font-mono">
-            Tell us what you did, who it&apos;s for, and how much. AI handles the rest. Used by freelancers in 127 countries.
-          </p>
+              {/* Subheadline */}
+              <p className="text-lg text-muted-foreground max-w-lg mb-10 leading-relaxed font-mono">
+                Tell us what you did, who it&apos;s for, and how much. AI handles the rest. Used by freelancers in 127 countries.
+              </p>
 
-          {/* CTA */}
-          <div className="flex flex-col items-center gap-2">
-            <button
-              onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
-              className="group px-8 py-4 bg-primary text-primary-foreground rounded-[10px] font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
-            >
-              $ start-generater --free
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <p className="text-sm text-muted-foreground">Natural language → Professional PDF · 99.8% success rate</p>
+              {/* CTA */}
+              <div className="flex flex-col items-center lg:items-start gap-2">
+                <button
+                  onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
+                  className="group px-8 py-4 bg-primary text-primary-foreground rounded-[10px] font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
+                >
+                  $ start-generater --free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+                <p className="text-sm text-muted-foreground">Natural language → Professional PDF · 99.8% success rate</p>
+              </div>
+            </div>
+
+            {/* Right: Stats Chart */}
+            <div className="bg-card border border-border rounded-lg p-6 md:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">Total Invoices Generated</h3>
+                  <p className="text-sm text-muted-foreground">Last 30 days</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-foreground">12,847</p>
+                  <p className="text-xs text-green-500 font-semibold">+28.5% vs last month</p>
+                </div>
+              </div>
+              <StatsChart width={600} height={200} />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 px-6 bg-muted/30">
+      {/* Stats Cards Section */}
+      <section className="py-12 px-6 bg-muted/30">
         <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card text-sm text-muted-foreground mb-6">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="font-semibold">Live Statistics</span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-              Trusted by Freelancers Worldwide
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of professionals who save time every day by generating professional invoices in seconds with AI.
-            </p>
-          </div>
-
-          {/* Stats Cards */}
           <StatsCard />
-
-          {/* Chart */}
-          <div className="bg-card border border-border rounded-lg p-6 md:p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Total Invoices Generated</h3>
-                <p className="text-sm text-muted-foreground">Last 30 days</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">12,847</p>
-                <p className="text-xs text-green-500 font-semibold">+28.5% vs last month</p>
-              </div>
-            </div>
-            <StatsChart width={800} height={200} />
-          </div>
-
-          {/* Social Proof */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              ⚡ <span className="font-semibold text-foreground">12,847 invoices</span> generated this month ·
-              <span className="font-semibold text-foreground"> 99.8% success rate</span> ·
-              <span className="font-semibold text-foreground"> 127 countries</span>
-            </p>
-          </div>
         </div>
       </section>
 
