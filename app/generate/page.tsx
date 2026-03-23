@@ -5,9 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, Download, Loader2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import InvoicePreview from '@/components/InvoicePreview';
+import LoginPrompt from '@/components/LoginPrompt';
 import Navbar from '@/components/Navbar';
 import { InvoiceData } from '@/lib/supabase';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 const countryToCurrency: { [key: string]: string } = {
   US: 'USD',
@@ -21,9 +23,11 @@ function GenerateContent() {
   const searchParams = useSearchParams();
   const country = searchParams.get('country') || 'US';
   const currency = countryToCurrency[country] || 'USD';
+  const { data: session } = useSession();
 
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const handleInvoiceGenerated = (data: InvoiceData) => {
     setInvoiceData(data);
@@ -31,6 +35,12 @@ function GenerateContent() {
 
   const handleDownload = async () => {
     if (!invoiceData) return;
+
+    // Check if user is logged in
+    if (!session?.user) {
+      setShowLoginPrompt(true);
+      return;
+    }
 
     setIsDownloading(true);
     try {
@@ -45,11 +55,10 @@ function GenerateContent() {
       if (!response.ok) {
         const data = await response.json();
         if (response.status === 401) {
-          window.location.href = '/api/auth/signin?callbackUrl=/generate';
+          setShowLoginPrompt(true);
           return;
         }
         if (response.status === 403) {
-          alert(data.error || 'No credits remaining. Please purchase more credits.');
           window.location.href = '/pricing';
           return;
         }
@@ -82,6 +91,7 @@ function GenerateContent() {
   return (
     <div className="h-screen flex flex-col bg-background">
       <Navbar />
+      <LoginPrompt show={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
 
       {/* Simple Back Bar */}
       <div className="border-b border-border px-6 py-3 flex items-center gap-4 bg-background">

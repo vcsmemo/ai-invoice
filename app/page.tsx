@@ -5,7 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import InvoicePreview from '@/components/InvoicePreview';
+import LoginPrompt from '@/components/LoginPrompt';
 import Navbar from '@/components/Navbar';
+import { useSession } from 'next-auth/react';
 import { InvoiceData } from '@/lib/supabase';
 
 const countryToCurrency: { [key: string]: string } = {
@@ -20,9 +22,11 @@ function HomeContent() {
   const searchParams = useSearchParams();
   const country = searchParams.get('country') || 'US';
   const currency = countryToCurrency[country] || 'USD';
+  const { data: session } = useSession();
 
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const handleInvoiceGenerated = (data: InvoiceData) => {
     setInvoiceData(data);
@@ -30,6 +34,12 @@ function HomeContent() {
 
   const handleDownload = async () => {
     if (!invoiceData) return;
+
+    // Check if user is logged in
+    if (!session?.user) {
+      setShowLoginPrompt(true);
+      return;
+    }
 
     setIsDownloading(true);
     try {
@@ -44,11 +54,10 @@ function HomeContent() {
       if (!response.ok) {
         const data = await response.json();
         if (response.status === 401) {
-          window.location.href = '/api/auth/signin';
+          setShowLoginPrompt(true);
           return;
         }
         if (response.status === 403) {
-          alert(data.error || 'No credits remaining. Please purchase more credits.');
           window.location.href = '/pricing';
           return;
         }
@@ -122,6 +131,7 @@ function HomeContent() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <LoginPrompt show={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
 
       {/* Hero Section */}
       <section className="min-h-[80vh] flex flex-col justify-center items-center px-6 pt-28 pb-16 relative overflow-hidden">

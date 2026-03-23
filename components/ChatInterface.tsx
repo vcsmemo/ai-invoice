@@ -20,7 +20,7 @@ export default function ChatInterface({
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "Hi there! 👋 I'll help you create a professional invoice in seconds.\n\nJust describe your work, like:\n• \"20 hours web dev for ABC Company at $100/hour\"\n• \"Logo design, $500 flat fee\"",
+      content: "Hi there! 👋 I'll help you create a professional invoice in seconds.\n\nJust describe your work, like:\n• \"20 hours web dev for ABC Company at $100/hour\"\n• \"Logo design, $500 flat fee\"\n\nTip: Sign in to save and download your invoices!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -77,11 +77,19 @@ export default function ChatInterface({
         setMessages((prev) => [...prev, assistantMessage]);
         onInvoiceGenerated(data.invoice);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+      let errorText = 'Sorry, I had trouble generating that invoice. ';
+
+      if (error?.message) {
+        errorText += `Error: ${error.message}`;
+      } else {
+        errorText += 'Please try again or make sure you\'re describing the work clearly (e.g., "20 hours of web design at $50/hour for ABC Company").';
+      }
+
       const errorMessage: ChatMessage = {
         role: 'assistant',
-        content: 'Sorry, I had trouble generating that invoice. Could you provide more details about the work, hours, and rate?',
+        content: errorText,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {

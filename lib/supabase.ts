@@ -293,7 +293,8 @@ export async function checkUserCredits(userId: string): Promise<boolean> {
 
 // Profile operations
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -308,7 +309,8 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 }
 
 export async function createProfile(userId: string, profile: Omit<Profile, 'id' | 'created_at' | 'updated_at'>): Promise<Profile | null> {
-  const { data, error } = await supabase
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from('profiles')
     .insert({ id: userId, ...profile })
     .select()
@@ -323,7 +325,8 @@ export async function createProfile(userId: string, profile: Omit<Profile, 'id' 
 }
 
 export async function updateProfile(userId: string, updates: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>): Promise<Profile | null> {
-  const { data, error } = await supabase
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from('profiles')
     .update(updates)
     .eq('id', userId)
@@ -359,13 +362,14 @@ export async function getOrCreateProfile(userId: string): Promise<Profile> {
 
 // Invoice status operations
 export async function updateInvoiceStatus(invoiceId: string, status: Invoice['status'], paidAt?: string): Promise<Invoice | null> {
+  const admin = getSupabaseAdmin();
   const updateData: any = { status };
 
   if (status === 'paid' && paidAt) {
     updateData.paid_at = paidAt;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from('invoices')
     .update(updateData)
     .eq('id', invoiceId)
@@ -382,11 +386,12 @@ export async function updateInvoiceStatus(invoiceId: string, status: Invoice['st
 
 // Generate invoice number based on user profile
 export async function generateInvoiceNumber(userId: string): Promise<string> {
+  const admin = getSupabaseAdmin();
   const profile = await getOrCreateProfile(userId);
   const prefix = profile?.invoice_prefix || 'INV';
 
   // Get the count of invoices for this user
-  const { count } = await supabase
+  const { count } = await admin
     .from('invoices')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId);

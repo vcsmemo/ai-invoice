@@ -33,7 +33,8 @@ export default function PricingPage() {
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      window.location.href = data.checkoutUrl;
+      // Open Stripe checkout in new tab
+      window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error('Error:', error);
       alert(error instanceof Error ? error.message : 'Failed to initiate checkout');
