@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FileText, LogOut, User, Settings } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signOut, signIn } from 'next-auth/react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -68,12 +68,12 @@ export default function Navbar() {
             </div>
           </div>
         ) : (
-          <Link
-            href="/api/auth/signin"
+          <button
+            onClick={() => signIn()}
             className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all glow-accent"
           >
             $ sudo login
-          </Link>
+          </button>
         )}
       </div>
     </nav>

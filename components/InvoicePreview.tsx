@@ -262,9 +262,9 @@ export default function InvoicePreview({
         {/* Logo and Hero Section */}
         <div className="flex justify-between items-start border-b border-border/30 pb-8 mb-8">
           <div>
-            {editedData.from?.logo ? (
+            {(editedData.from?.logo || (editedData.from as any)?.logo_url) ? (
               <img 
-                src={editedData.from.logo} 
+                src={editedData.from?.logo || (editedData.from as any).logo_url} 
                 alt="Logo" 
                 className="h-12 w-auto object-contain"
               />
