@@ -48,6 +48,8 @@ export default function ChatInterface({
     setIsGenerating(true);
 
     try {
+      console.log('[Chat] Sending message to AI...');
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -62,12 +64,16 @@ export default function ChatInterface({
         }),
       });
 
+      console.log('[Chat] Response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.details || errorData.error || 'Failed to generate invoice');
+        console.error('[Chat] Error response:', errorData);
+        throw new Error(errorData.error || errorData.details || 'Failed to generate invoice');
       }
 
       const data = await response.json();
+      console.log('[Chat] Success:', data);
 
       if (data.success && data.invoice) {
         const assistantMessage: ChatMessage = {
@@ -79,22 +85,20 @@ export default function ChatInterface({
         onInvoiceGenerated(data.invoice);
       }
     } catch (error: any) {
-      console.error('Error:', error);
-      let errorText = 'Sorry, I had trouble generating that invoice. ';
+      console.error('[Chat] Error:', error);
+      let errorText = 'Sorry, I had trouble generating that invoice.\n\n';
 
       if (error?.message) {
-        errorText += `Error: ${error.message}`;
-      } else {
-        errorText += 'Please try again or make sure you\'re describing the work clearly (e.g., "20 hours of web design at $50/hour for ABC Company").';
+        errorText += `**Error:** ${error.message}\n\n`;
       }
+
+      errorText += 'Please try again. If the problem persists, check:\n';
+      errorText += '• You\'re describing work clearly (e.g., "20 hours web dev at $100/hour")\n';
+      errorText += '• Check browser console (F12) for detailed error logs';
 
       const errorMessage: ChatMessage = {
         role: 'assistant',
-<<<<<<< HEAD
         content: errorText,
-=======
-        content: `Sorry, I had trouble generating that invoice.\n\n**Error Details:** ${error.message || 'Unknown error'}\n\nPlease check your Anthropic API key and limits.`,
->>>>>>> 7676a8a (Fix AI and PDF download with comprehensive debugging)
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {

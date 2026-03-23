@@ -35,8 +35,12 @@ function HomeContent() {
   };
 
   const handleDownload = async () => {
-    if (!invoiceData) {
+    // Use either generated invoice or sample invoice
+    const dataToDownload = invoiceData || sampleInvoice;
+
+    if (!dataToDownload) {
       console.error('[PDF Download] No invoice data available');
+      alert('No invoice data to download');
       return;
     }
 
@@ -47,18 +51,19 @@ function HomeContent() {
       return;
     }
 
-    console.log('[PDF Download] Starting download process for invoice:', invoiceData);
+    console.log('[PDF Download] Starting download process...');
+    console.log('[PDF Download] Using data:', invoiceData ? 'generated invoice' : 'sample invoice');
     setIsDownloading(true);
 
     try {
       // Step 1: Create invoice
-      console.log('[PDF Download] Step 1: Creating invoice...');
+      console.log('[PDF Download] Step 1: Creating invoice in database...');
       const response = await fetch('/api/invoices', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ invoiceData }),
+        body: JSON.stringify({ invoiceData: dataToDownload }),
       });
 
       console.log('[PDF Download] Create invoice response status:', response.status);
@@ -291,17 +296,23 @@ function HomeContent() {
             <div className="lg:pl-6">
               <InvoicePreview invoiceData={invoiceData || sampleInvoice} />
 
-              {invoiceData && (
-                <div className="mt-5 text-center">
-                  <button
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                    className="btn-primary"
-                  >
-                    {isDownloading ? 'Downloading...' : 'Download PDF'}
-                  </button>
-                </div>
-              )}
+              <div className="mt-5 text-center">
+                <button
+                  onClick={() => {
+                    console.log('[Page] Download button clicked, invoiceData:', invoiceData ? 'exists' : 'using sample');
+                    handleDownload();
+                  }}
+                  disabled={isDownloading}
+                  className="btn-primary"
+                >
+                  {isDownloading ? 'Downloading...' : (invoiceData ? 'Download Generated PDF' : 'Download Sample PDF')}
+                </button>
+                {!invoiceData && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    💡 Generate an invoice to download your custom PDF
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
