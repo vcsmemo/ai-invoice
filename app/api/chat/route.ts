@@ -8,6 +8,18 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if ANTHROPIC_API_KEY is configured
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error('ANTHROPIC_API_KEY is not configured');
+      return NextResponse.json(
+        {
+          error: 'API configuration error',
+          details: 'AI service is not properly configured. Please contact support.',
+        },
+        { status: 500 }
+      );
+    }
+
     // Check authentication
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
@@ -90,11 +102,22 @@ export async function POST(request: NextRequest) {
       success: true,
       invoice: invoiceData,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in chat API:', error);
+
+    // Provide more specific error messages
+    let errorMessage = 'Failed to generate invoice';
+    if (error?.message?.includes('API key')) {
+      errorMessage = 'AI service configuration error';
+    } else if (error?.message?.includes('rate limit')) {
+      errorMessage = 'AI service is busy. Please try again.';
+    } else if (error?.status === 401) {
+      errorMessage = 'AI authentication failed';
+    }
+
     return NextResponse.json(
       {
-        error: 'Failed to generate invoice',
+        error: errorMessage,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
