@@ -76,46 +76,49 @@ export default function MyInvoicesPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[rgb(200,245,66)]"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
 
       {/* Header */}
-      <section className="pt-28 pb-10 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
+      <section className="pt-28 pb-10 px-6 relative overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgb(16,16,16)] text-xs text-[rgb(180,180,180)] mb-5">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-5 shadow-sm">
                 <FileText className="w-3.5 h-3.5" />
                 <span>My Invoices</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-semibold mb-2">Manage your invoices</h1>
-              <p className="text-[rgb(180,180,180)]">View, download, and track all your generated invoices</p>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Manage your invoices</h1>
+              <p className="text-muted-foreground font-mono text-sm">View, download, and track all your generated invoices</p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="px-5 py-3 bg-[rgb(16,16,16)] border border-[rgba(255,255,255,0.08)] rounded-xl">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 bg-[rgba(200,245,66,0.1)] rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-[rgb(200,245,66)]" />
+            <div className="flex items-center gap-4">
+              <div className="px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-[rgb(180,180,180)]">Credits</p>
-                    <p className="text-xl font-bold text-[rgb(250,250,250)]">{session?.user?.credits_remaining || 0}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Credits</p>
+                    <p className="text-xl font-bold text-foreground">{session?.user?.credits_remaining || 0}</p>
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => router.push('/')}
-                className="btn-primary flex items-center gap-2"
+                className="btn-primary flex items-center gap-2 h-fit"
               >
                 <FileText className="w-4 h-4" />
                 Create New
@@ -129,12 +132,12 @@ export default function MyInvoicesPage() {
       <section className="flex-1 px-6 pb-10">
         <div className="max-w-7xl mx-auto">
           {invoices.length === 0 ? (
-            <div className="bg-[rgb(16,16,16)] rounded-xl border border-[rgba(255,255,255,0.08)] p-12 text-center">
-              <div className="w-16 h-16 bg-[rgba(200,245,66,0.1)] rounded-full flex items-center justify-center mx-auto mb-5">
-                <FileText className="w-8 h-8 text-[rgb(200,245,66)]" />
+            <div className="bg-card rounded-xl border border-border p-12 text-center shadow-sm">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
+                <FileText className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-[rgb(250,250,250)] mb-2">No invoices yet</h3>
-              <p className="text-[rgb(180,180,180)] mb-6 max-w-md mx-auto">Create your first professional AI-generated invoice</p>
+              <h3 className="text-xl font-bold text-foreground mb-2">No invoices yet</h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto font-mono text-sm">Create your first professional AI-generated invoice</p>
               <button
                 onClick={() => router.push('/')}
                 className="btn-primary inline-flex items-center gap-2"
@@ -144,76 +147,76 @@ export default function MyInvoicesPage() {
               </button>
             </div>
           ) : (
-            <div className="bg-[rgb(16,16,16)] rounded-xl border border-[rgba(255,255,255,0.08)] overflow-hidden">
+            <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="border-b border-[rgba(255,255,255,0.08)]">
+                  <thead className="border-b border-border bg-muted/30">
                     <tr>
-                      <th className="px-5 py-3.5 text-left text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wider">
+                      <th className="px-5 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                         Invoice
                       </th>
-                      <th className="px-5 py-3.5 text-left text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wider">
+                      <th className="px-5 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                         Customer
                       </th>
-                      <th className="px-5 py-3.5 text-left text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wider">
+                      <th className="px-5 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                         Date
                       </th>
-                      <th className="px-5 py-3.5 text-right text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wider">
+                      <th className="px-5 py-4 text-right text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                         Amount
                       </th>
-                      <th className="px-5 py-3.5 text-right text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wider">
+                      <th className="px-5 py-4 text-right text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[rgba(255,255,255,0.08)]">
+                  <tbody className="divide-y divide-border">
                     {invoices.map((invoice, index) => (
-                      <tr key={invoice.id} className="hover:bg-[rgb(20,20,20)] transition-colors">
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 bg-[rgba(200,245,66,0.1)] rounded-lg flex items-center justify-center">
-                              <FileText className="w-4 h-4 text-[rgb(200,245,66)]" />
+                      <tr key={invoice.id} className="hover:bg-muted/30 transition-colors group">
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                              <FileText className="w-5 h-5 text-primary group-hover:text-inherit" />
                             </div>
                             <div>
-                              <p className="font-medium text-sm text-[rgb(250,250,250)]">{invoice.invoice_number}</p>
-                              <p className="text-xs text-[rgb(180,180,180)]">{invoice.invoice_data.items.length} items</p>
+                              <p className="font-bold text-sm text-foreground">{invoice.invoice_number}</p>
+                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{invoice.invoice_data.items.length} items</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5">
-                          <p className="font-medium text-sm text-[rgb(250,250,250)]">
+                        <td className="px-5 py-4">
+                          <p className="font-bold text-sm text-foreground">
                             {invoice.invoice_data.customer.name}
                           </p>
                           {invoice.invoice_data.customer.company && (
-                            <p className="text-xs text-[rgb(180,180,180)]">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                               {invoice.invoice_data.customer.company}
-                            </p>
+                             </p>
                           )}
                         </td>
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-1.5 text-[rgb(250,250,250)]">
-                            <Calendar className="w-3.5 h-3.5 text-[rgb(200,245,66)]" />
-                            <span className="text-xs">{formatDate(invoice.created_at)}</span>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-1.5 text-foreground">
+                            <Calendar className="w-3.5 h-3.5 text-primary" />
+                            <span className="text-xs font-mono">{formatDate(invoice.created_at)}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 text-right">
-                          <div className="flex items-center justify-end gap-0.5">
-                            <DollarSign className="w-3.5 h-3.5 text-[rgb(200,245,66)]" />
-                            <span className="font-semibold text-sm text-[rgb(250,250,250)]">
+                        <td className="px-5 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1 text-foreground font-bold">
+                            <span className="text-xs text-muted-foreground">$</span>
+                            <span className="text-sm">
                               {invoice.invoice_data.total.toFixed(2)}
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td className="px-5 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => handleDownload(invoice.id, invoice.invoice_number)}
                               disabled={downloadingId === invoice.id}
-                              className="p-1.5 text-[rgb(180,180,180)] hover:text-[rgb(200,245,66)] hover:bg-[rgba(200,245,66,0.1)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-primary/20"
                               title="Download PDF"
                             >
                               {downloadingId === invoice.id ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[rgb(200,245,66)]"></div>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                               ) : (
                                 <Download className="w-4 h-4" />
                               )}
@@ -234,16 +237,16 @@ export default function MyInvoicesPage() {
       {session?.user && session.user.credits_remaining < 3 && (
         <section className="px-6 pb-10">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-[rgb(16,16,16)] rounded-xl p-6 border border-[rgba(255,255,255,0.08)] flex items-center justify-between">
+            <div className="bg-card rounded-xl p-8 border border-border flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
               <div>
-                <h3 className="text-base font-semibold text-[rgb(250,250,250)] mb-1">Running low on credits?</h3>
-                <p className="text-sm text-[rgb(180,180,180)]">Purchase more and keep creating professional invoices</p>
+                <h3 className="text-xl font-bold text-foreground mb-1 uppercase tracking-tight">Running low on credits?</h3>
+                <p className="text-sm text-muted-foreground font-mono">Purchase more and keep creating professional invoices</p>
               </div>
               <button
                 onClick={() => router.push('/pricing')}
-                className="btn-primary flex items-center gap-2"
+                className="btn-primary flex items-center gap-2 group shadow-lg glow-accent"
               >
-                <DollarSign className="w-4 h-4" />
+                <DollarSign className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 Get More Credits
               </button>
             </div>

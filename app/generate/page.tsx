@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, Download, Loader2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import InvoicePreview from '@/components/InvoicePreview';
@@ -8,7 +9,19 @@ import Navbar from '@/components/Navbar';
 import { InvoiceData } from '@/lib/supabase';
 import Link from 'next/link';
 
+const countryToCurrency: { [key: string]: string } = {
+  US: 'USD',
+  UK: 'GBP',
+  AU: 'AUD',
+  CA: 'CAD',
+  DE: 'EUR',
+};
+
 export default function GeneratePage() {
+  const searchParams = useSearchParams();
+  const country = searchParams.get('country') || 'US';
+  const currency = countryToCurrency[country] || 'USD';
+
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -21,9 +34,46 @@ export default function GeneratePage() {
 
     setIsDownloading(true);
     try {
-      alert(`PDF generation will be integrated next!\n\nInvoice Total: $${invoiceData.total.toFixed(2)}`);
+      const response = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ invoiceData }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (response.status === 401) {
+          window.location.href = '/api/auth/signin?callbackUrl=/generate';
+          return;
+        }
+        if (response.status === 403) {
+          alert(data.error || 'No credits remaining. Please purchase more credits.');
+          window.location.href = '/pricing';
+          return;
+        }
+        throw new Error(data.error || 'Failed to create invoice');
+      }
+
+      const result = await response.json();
+      const pdfResponse = await fetch(`/api/invoices/${result.invoice.id}/pdf`);
+      if (!pdfResponse.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const blob = await pdfResponse.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${result.invoice.invoice_number}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading PDF:', error);
+      alert(error instanceof Error ? error.message : 'Failed to download PDF. Please try again.');
     } finally {
       setIsDownloading(false);
     }
@@ -50,6 +100,8 @@ export default function GeneratePage() {
           <ChatInterface
             onInvoiceGenerated={handleInvoiceGenerated}
             isLoading={isDownloading}
+            initialCurrency={currency}
+            initialCountry={country}
           />
         </div>
 

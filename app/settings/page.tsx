@@ -138,61 +138,65 @@ export default function SettingsPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[rgb(200,245,66)]"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
 
-      <section className="flex-1 px-6 py-28">
-        <div className="max-w-4xl mx-auto">
+      <section className="flex-1 px-6 py-28 relative overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto relative z-10">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-2.5 mb-4">
-              <Building2 className="w-5 h-5 text-[rgb(200,245,66)]" />
-              <h1 className="text-3xl font-semibold text-[rgb(250,250,250)]">Company Settings</h1>
+              <Building2 className="w-5 h-5 text-primary" />
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">Company Settings</h1>
             </div>
-            <p className="text-[rgb(180,180,180)]">
+            <p className="text-muted-foreground font-mono text-sm">
               Configure your business information to appear on invoices
             </p>
           </div>
 
           {/* Save Status Banner */}
           {saveStatus === 'success' && (
-            <div className="mb-6 p-4 bg-[rgba(200,245,66,0.1)] border border-[rgba(200,245,66,0.3)] rounded-lg flex items-center gap-3">
-              <Check className="w-5 h-5 text-[rgb(200,245,66)]" />
-              <p className="text-sm text-[rgb(250,250,250)]">Settings saved successfully!</p>
+            <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-center gap-3">
+              <Check className="w-5 h-5 text-primary" />
+              <p className="text-sm font-medium">Settings saved successfully!</p>
             </div>
           )}
 
           {saveStatus === 'error' && (
-            <div className="mb-6 p-4 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-[rgb(239,68,68)]" />
-              <p className="text-sm text-[rgb(250,250,250)]">Failed to save settings. Please try again.</p>
+            <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-destructive" />
+              <p className="text-sm font-medium">Failed to save settings. Please try again.</p>
             </div>
           )}
 
           <div className="space-y-6">
             {/* Logo Upload */}
-            <div className="bg-[rgb(16,16,16)] rounded-xl border border-[rgba(255,255,255,0.08)] p-6">
-              <h3 className="text-lg font-semibold text-[rgb(250,250,250)] mb-4">Company Logo</h3>
+            <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-foreground mb-4 uppercase tracking-tight"># company_logo</h3>
 
               <div className="flex items-start gap-6">
                 {/* Logo Preview */}
                 <div className="flex-shrink-0">
                   {profile.logo_url ? (
-                    <div className="relative w-24 h-24 bg-[rgb(24,24,24)] rounded-lg border border-[rgba(255,255,255,0.08)] flex items-center justify-center overflow-hidden">
+                    <div className="relative w-24 h-24 bg-muted/20 rounded-lg border border-border flex items-center justify-center overflow-hidden">
                       <img src={profile.logo_url} alt="Logo" className="w-full h-full object-contain" />
                       <button
                         onClick={handleRemoveLogo}
-                        className="absolute top-1 right-1 p-1 bg-[rgba(0,0,0,0.8)] rounded text-[rgb(250,250,250)] hover:bg-[rgb(200,245,66)] hover:text-[rgb(8,8,8)] transition-colors"
+                        className="absolute top-1 right-1 p-1 bg-background/80 rounded border border-border text-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors shadow-sm"
                         title="Remove logo"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,8 +205,8 @@ export default function SettingsPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="w-24 h-24 bg-[rgb(24,24,24)] rounded-lg border border-[rgba(255,255,255,0.08)] flex items-center justify-center">
-                      <Building2 className="w-8 h-8 text-[rgb(80,80,80)]" />
+                    <div className="w-24 h-24 bg-muted/20 rounded-lg border border-border flex items-center justify-center">
+                      <Building2 className="w-8 h-8 text-muted-foreground" />
                     </div>
                   )}
                 </div>
@@ -218,24 +222,24 @@ export default function SettingsPage() {
                         className="hidden"
                         disabled={isSaving}
                       />
-                      <div className="px-4 py-2 bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-lg text-sm font-medium hover:bg-[rgb(180,230,60)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2">
+                      <div className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-bold hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm glow-accent">
                         <Upload className="w-4 h-4" />
                         {isSaving ? 'Uploading...' : 'Upload Logo'}
                       </div>
                     </label>
-                    <p className="text-xs text-[rgb(120,120,120)]">PNG, JPG up to 2MB</p>
+                    <p className="text-xs text-muted-foreground font-mono">PNG, JPG up to 2MB</p>
                   </div>
 
                   {uploadProgress > 0 && (
-                    <div className="w-full bg-[rgb(24,24,24)] rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden shadow-inner">
                       <div
-                        className="bg-[rgb(200,245,66)] h-full transition-all duration-300"
+                        className="bg-primary h-full transition-all duration-300 shadow-sm"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
                   )}
 
-                  <p className="text-xs text-[rgb(180,180,180)] mt-2">
+                  <p className="text-xs text-muted-foreground mt-2 font-mono">
                     Recommended: Square logo, transparent background, at least 200x200px
                   </p>
                 </div>
@@ -243,110 +247,110 @@ export default function SettingsPage() {
             </div>
 
             {/* Company Information */}
-            <div className="bg-[rgb(16,16,16)] rounded-xl border border-[rgba(255,255,255,0.08)] p-6">
-              <h3 className="text-lg font-semibold text-[rgb(250,250,250)] mb-6">Company Information</h3>
+            <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-foreground mb-6 uppercase tracking-tight"># company_info</h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Company Name</label>
+                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Company Name</label>
                   <input
                     type="text"
                     value={profile.company_name || ''}
                     onChange={(e) => setProfile({ ...profile, company_name: e.target.value })}
                     placeholder="Your Company LLC"
-                    className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)]"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Business Address</label>
+                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Business Address</label>
                   <textarea
                     value={profile.address || ''}
                     onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                     placeholder="123 Business Street&#10;City, State 12345&#10;Country"
                     rows={3}
-                    className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)] resize-none"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Phone</label>
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Phone</label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(120,120,120)]" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                       <input
                         type="tel"
                         value={profile.phone || ''}
                         onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                         placeholder="+1 (555) 123-4567"
-                        className="w-full pl-10 pr-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)]"
+                        className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Website</label>
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Website</label>
                     <div className="relative">
-                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(120,120,120)]" />
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                       <input
                         type="url"
                         value={profile.website || ''}
                         onChange={(e) => setProfile({ ...profile, website: e.target.value })}
                         placeholder="https://yourcompany.com"
-                        className="w-full pl-10 pr-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)]"
+                        className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Tax ID / EIN</label>
+                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Tax ID / EIN</label>
                   <input
                     type="text"
                     value={profile.tax_id || ''}
                     onChange={(e) => setProfile({ ...profile, tax_id: e.target.value })}
                     placeholder="12-3456789"
-                    className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)]"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono"
                   />
-                  <p className="text-xs text-[rgb(120,120,120)] mt-1">Will appear on invoices for tax purposes</p>
+                  <p className="text-[10px] text-muted-foreground mt-2 font-mono uppercase tracking-widest opacity-70">Will appear on invoices for tax purposes</p>
                 </div>
               </div>
             </div>
 
             {/* Payment Information */}
-            <div className="bg-[rgb(16,16,16)] rounded-xl border border-[rgba(255,255,255,0.08)] p-6">
-              <h3 className="text-lg font-semibold text-[rgb(250,250,250)] mb-6">Payment Information</h3>
+            <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-foreground mb-6 uppercase tracking-tight"># payment_info</h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Payment Instructions</label>
+                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Payment Instructions</label>
                   <textarea
                     value={profile.payment_instructions || ''}
                     onChange={(e) => setProfile({ ...profile, payment_instructions: e.target.value })}
                     placeholder="Please include invoice number in payment reference.&#10;&#10;Bank transfer:&#10;Bank: Example Bank&#10;Account: XXXXXXXXXX&#10;Routing: XXXXXXXXXX&#10;&#10;PayPal: payments@yourcompany.com"
                     rows={8}
-                    className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)] resize-none"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono resize-none overflow-y-auto"
                   />
-                  <p className="text-xs text-[rgb(120,120,120)] mt-1">These instructions will appear on all invoices</p>
+                  <p className="text-[10px] text-muted-foreground mt-2 font-mono uppercase tracking-widest opacity-70">These instructions will appear on all invoices</p>
                 </div>
               </div>
             </div>
 
             {/* Invoice Settings */}
-            <div className="bg-[rgb(16,16,16)] rounded-xl border border-[rgba(255,255,255,0.08)] p-6">
+            <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
               <div className="flex items-center gap-2.5 mb-6">
-                <FileText className="w-5 h-5 text-[rgb(200,245,66)]" />
-                <h3 className="text-lg font-semibold text-[rgb(250,250,250)]">Invoice Defaults</h3>
+                <FileText className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-bold text-foreground uppercase tracking-tight"># invoice_defaults</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Currency</label>
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Currency</label>
                     <select
                       value={profile.default_currency}
                       onChange={(e) => setProfile({ ...profile, default_currency: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)]"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono cursor-pointer"
                     >
                       {getSupportedCurrencies().map((currency) => (
                         <option key={currency.code} value={currency.code}>
@@ -357,19 +361,19 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Invoice Prefix</label>
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Invoice Prefix</label>
                     <input
                       type="text"
                       value={profile.invoice_prefix}
                       onChange={(e) => setProfile({ ...profile, invoice_prefix: e.target.value.toUpperCase() })}
                       placeholder="INV"
                       maxLength={10}
-                      className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)]"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Default Tax Rate (%)</label>
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Default Tax Rate (%)</label>
                     <input
                       type="number"
                       value={profile.default_tax_rate}
@@ -377,17 +381,17 @@ export default function SettingsPage() {
                       min="0"
                       max="100"
                       step="0.1"
-                      className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)] placeholder:text-[rgb(120,120,120)]"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(180,180,180)] mb-2">Default Payment Terms</label>
+                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Default Payment Terms</label>
                   <select
                     value={profile.payment_terms}
                     onChange={(e) => setProfile({ ...profile, payment_terms: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-2 focus:ring-[rgb(200,245,66)]"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono cursor-pointer"
                   >
                     <option value="Due on receipt">Due on receipt</option>
                     <option value="Net 15">Net 15 days</option>
@@ -404,7 +408,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="px-6 py-2.5 bg-[rgb(200,245,66)] text-[rgb(8,8,8)] rounded-full font-semibold text-sm hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 glow-accent-strong flex items-center gap-2"
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-sm hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 glow-accent shadow-lg flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {isSaving ? 'Saving...' : 'Save Settings'}

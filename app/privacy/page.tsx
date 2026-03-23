@@ -9,37 +9,37 @@ export default function PrivacyPage() {
 
           <h2>Information We Collect</h2>
           <p>
-            InvoiceAI collects minimal information necessary to provide our service. We do not store your invoice data on our servers - all information is processed locally in your browser.
+            AI Invoice Generator collects your email address and profile information (company name, address, etc.) to provide our service. Your invoice data is stored securely in our database to allow you to manage and access your history.
           </p>
 
           <h2>How We Use Your Information</h2>
           <p>
-            We use the information you provide solely to generate invoices. Your data is never sold, rented, or shared with third parties for marketing purposes.
+            We use the information you provide solely to generate and manage invoices. Your data is encrypted and never shared with third parties for marketing purposes.
           </p>
 
-          <h2>Data Storage</h2>
+          <h2>Data Storage & Security</h2>
           <p>
-            Invoice templates and client information are stored locally in your browser's local storage. We do not have access to this data and it is never transmitted to our servers.
+            Your profile and invoice data are stored securely using Supabase (PostgreSQL). We implement industry-standard security measures to protect your information. Logo files are stored in Supabase Storage.
           </p>
 
           <h2>Cookies</h2>
           <p>
-            We use essential cookies to ensure the website functions properly. These include cookies for maintaining your session and storing your preferences.
+            We use essential cookies via NextAuth.js to maintain your secure session. Authentication is handled safely through Google.
           </p>
 
           <h2>Third-Party Services</h2>
           <p>
-            We use third-party services for payment processing (Stripe) and analytics. These services have their own privacy policies which we encourage you to review.
+            We use Anthropic (Claude AI) for invoice generation and Stripe for secure payment processing. These services have their own privacy policies.
           </p>
 
           <h2>Your Rights</h2>
           <p>
-            You have the right to access, modify, or delete your data at any time. Since your data is stored locally in your browser, you can clear it by clearing your browser's local storage.
+            You have the right to access, modify, or delete your account and data at any time via the Settings page.
           </p>
 
           <h2>Contact Us</h2>
           <p>
-            If you have questions about this privacy policy, please contact us at privacy@invoiceai.com
+            If you have questions about this privacy policy, please contact us at support@invoicegenerator.ai
           </p>
         </div>
       </div>

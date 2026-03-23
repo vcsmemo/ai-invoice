@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name || '',
             avatar_url: user.image || '',
-            credits_remaining: 3, // Free tier: 3 credits
+            credits_remaining: 5, // Free tier: 5 credits
           });
 
           if (!dbUser) {

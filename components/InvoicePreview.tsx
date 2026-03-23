@@ -133,7 +133,8 @@ export default function InvoicePreview({
   const removeDiscount = () => {
     let newTotal = editedData.subtotal;
     if (editedData.tax && editedData.tax.rate > 0) {
-      const taxAmount = newTotal * (editedData.tax.rate / 100);
+      const taxableAmount = editedData.subtotal;
+      const taxAmount = taxableAmount * (editedData.tax.rate / 100);
       editedData.tax.amount = taxAmount;
       newTotal += taxAmount;
     }
@@ -142,6 +143,16 @@ export default function InvoicePreview({
       ...editedData,
       discount: undefined,
       total: newTotal,
+    });
+  };
+
+  const updateFrom = (field: string, value: string) => {
+    setEditedData({
+      ...editedData,
+      from: {
+        ...(editedData.from || { name: '' }),
+        [field]: value,
+      },
     });
   };
 
@@ -170,33 +181,50 @@ export default function InvoicePreview({
     });
   };
 
+  const calculateDueDate = (issueDate: string, terms: string) => {
+    if (!issueDate) return '';
+    const date = new Date(issueDate);
+    if (isNaN(date.getTime())) return '';
+
+    if (terms === 'Due on receipt') {
+      return issueDate;
+    }
+
+    const days = parseInt(terms.replace('Net ', ''));
+    if (isNaN(days)) return '';
+
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split('T')[0];
+  };
+
   return (
-    <div className="bg-[rgb(17,17,17)] rounded-[10px] border border-[rgba(96,96,104,0.2)] overflow-hidden font-mono shadow-2xl relative">
+    <div className="bg-card rounded-[10px] border border-border overflow-hidden font-mono shadow-2xl relative">
+      {/* ... (existing code remains same until the select) */}
       {/* Terminal Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[rgb(26,26,26)] border-b border-[rgba(96,96,104,0.2)]">
+      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
         </div>
-        <div className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest">
+        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
           invoice-preview --readonly
         </div>
         <div className="w-10" />
       </div>
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(96,96,104,0.1)] bg-[rgb(20,20,20)]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-muted/30">
         <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-[rgb(217,145,120)]" />
-          <span className="text-xs font-bold text-[rgb(237,237,237)] uppercase tracking-widest">$ view doc</span>
+          <FileText className="w-4 h-4 text-primary" />
+          <span className="text-xs font-bold text-foreground uppercase tracking-widest">$ view doc</span>
         </div>
         <div className="flex gap-2">
           {!isEditing ? (
             <>
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-3 py-1.5 text-xs font-bold text-[rgb(237,237,237)] bg-[rgb(38,38,38)] border border-[rgba(96,96,104,0.2)] rounded-[6px] hover:bg-[rgb(45,45,45)] transition-colors flex items-center gap-1.5 uppercase tracking-tighter"
+                className="px-3 py-1.5 text-xs font-bold text-foreground bg-secondary border border-border rounded-[6px] hover:bg-muted transition-colors flex items-center gap-1.5 uppercase tracking-tighter"
               >
                 <Edit2 className="w-3 h-3" />
                 edit
@@ -204,7 +232,7 @@ export default function InvoicePreview({
               <button
                 onClick={onDownload}
                 disabled={isDownloading}
-                className="px-3 py-1.5 text-xs font-bold text-[rgb(10,10,10)] bg-[rgb(217,145,120)] rounded-[6px] hover:bg-[rgb(230,160,135)] disabled:bg-[rgb(38,38,38)] disabled:text-[rgb(163,163,163)] disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 uppercase tracking-tighter glow-accent"
+                className="px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary rounded-[6px] hover:opacity-90 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 uppercase tracking-tighter glow-accent"
               >
                 <Download className="w-3 h-3" />
                 {isDownloading ? 'generating...' : 'export pdf'}
@@ -214,13 +242,13 @@ export default function InvoicePreview({
             <>
               <button
                 onClick={handleCancel}
-                className="px-3 py-1.5 text-xs font-bold text-[rgb(237,237,237)] bg-[rgb(38,38,38)] border border-[rgba(96,96,104,0.2)] rounded-[6px] hover:bg-[rgb(45,45,45)] transition-colors uppercase tracking-tighter"
+                className="px-3 py-1.5 text-xs font-bold text-foreground bg-secondary border border-border rounded-[6px] hover:bg-muted transition-colors uppercase tracking-tighter"
               >
                 cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-3 py-1.5 text-xs font-bold text-[rgb(10,10,10)] bg-[rgb(217,145,120)] rounded-[6px] hover:bg-[rgb(230,160,135)] transition-colors uppercase tracking-tighter glow-accent"
+                className="px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary rounded-[6px] hover:opacity-90 transition-colors uppercase tracking-tighter glow-accent"
               >
                 save
               </button>
@@ -231,29 +259,54 @@ export default function InvoicePreview({
 
       {/* Invoice Content */}
       <div className="p-8 space-y-6">
-        {/* Invoice Number & Meta */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Logo and Hero Section */}
+        <div className="flex justify-between items-start border-b border-border/30 pb-8 mb-8">
           <div>
-            <label className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest"># invoice_id</label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedData.invoice.invoiceNumber}
-                onChange={(e) =>
-                  setEditedData({
-                    ...editedData,
-                    invoice: { ...editedData.invoice, invoiceNumber: e.target.value },
-                  })
-                }
-                className="w-full mt-1 px-2 py-1.5 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded-[4px] text-xs text-[rgb(237,237,237)] focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] font-mono"
+            {editedData.from?.logo ? (
+              <img 
+                src={editedData.from.logo} 
+                alt="Logo" 
+                className="h-12 w-auto object-contain"
               />
             ) : (
-              <p className="text-xs font-bold text-[rgb(217,145,120)] mt-1">{editedData.invoice.invoiceNumber}</p>
+              <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-center">
+                <span className="text-primary font-bold text-lg">
+                  {editedData.from?.company?.substring(0, 2).toUpperCase() || 'AI'}
+                </span>
+              </div>
             )}
+            <div className="mt-4">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest"># invoice_id</p>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedData.invoice.invoiceNumber}
+                  onChange={(e) =>
+                    setEditedData({
+                      ...editedData,
+                      invoice: { ...editedData.invoice, invoiceNumber: e.target.value },
+                    })
+                  }
+                  className="mt-1 px-2 py-1 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+              ) : (
+                <p className="text-xs font-bold text-primary mt-0.5">{editedData.invoice.invoiceNumber}</p>
+              )}
+            </div>
           </div>
+          <div className="text-right">
+            <h2 className="text-4xl font-bold tracking-tighter text-foreground mb-1">INVOICE</h2>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Amount Due</span>
+              <span className="text-2xl font-bold text-primary">{formatCurrency(editedData.total, editedData.invoice.currency)}</span>
+            </div>
+          </div>
+        </div>
 
+        {/* Project Meta */}
+        <div className="grid grid-cols-2 gap-8 mb-8">
           <div>
-            <label className="text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wide">PO Number</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1"># po_number</label>
             {isEditing ? (
               <input
                 type="text"
@@ -265,25 +318,31 @@ export default function InvoicePreview({
                   })
                 }
                 placeholder="Optional"
-                className="w-full mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
               />
             ) : (
-              <p className="text-sm font-medium text-[rgb(250,250,250)] mt-1">{editedData.invoice.poNumber || '-'}</p>
+              <p className="text-xs font-bold text-foreground">{editedData.invoice.poNumber || '-'}</p>
             )}
           </div>
 
           <div>
-            <label className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest"># payment_terms</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1"># payment_terms</label>
             {isEditing ? (
               <select
                 value={editedData.invoice.paymentTerms || 'Net 30'}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const newTerms = e.target.value;
+                  const newDueDate = calculateDueDate(editedData.invoice.issueDate, newTerms);
                   setEditedData({
                     ...editedData,
-                    invoice: { ...editedData.invoice, paymentTerms: e.target.value },
-                  })
-                }
-                className="w-full mt-1 px-2 py-1.5 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded-[4px] text-xs text-[rgb(237,237,237)] focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] font-mono"
+                    invoice: { 
+                      ...editedData.invoice, 
+                      paymentTerms: newTerms,
+                      dueDate: newDueDate || editedData.invoice.dueDate
+                    },
+                  });
+                }}
+                className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
               >
                 <option value="Due on receipt">receipt</option>
                 <option value="Net 15">net_15</option>
@@ -291,79 +350,120 @@ export default function InvoicePreview({
                 <option value="Net 60">net_60</option>
               </select>
             ) : (
-              <p className="text-xs font-bold text-[rgb(237,237,237)] mt-1">{editedData.invoice.paymentTerms || 'Net 30'}</p>
+              <p className="text-xs font-bold text-foreground">{editedData.invoice.paymentTerms || 'Net 30'}</p>
             )}
           </div>
         </div>
 
-        {/* Customer Info */}
-        <div>
-          <h3 className="text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wide mb-3">Bill To</h3>
-          {isEditing ? (
-            <div className="space-y-2">
-              <input
-                type="text"
-                value={editedData.customer.name}
-                onChange={(e) =>
-                  setEditedData({
-                    ...editedData,
-                    customer: { ...editedData.customer, name: e.target.value },
-                  })
-                }
-                placeholder="Customer Name"
-                className="w-full px-3 py-2 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
-              />
-              <input
-                type="text"
-                value={editedData.customer.company || ''}
-                onChange={(e) =>
-                  setEditedData({
-                    ...editedData,
-                    customer: { ...editedData.customer, company: e.target.value },
-                  })
-                }
-                placeholder="Company"
-                className="w-full px-3 py-2 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
-              />
-              <input
-                type="email"
-                value={editedData.customer.email || ''}
-                onChange={(e) =>
-                  setEditedData({
-                    ...editedData,
-                    customer: { ...editedData.customer, email: e.target.value },
-                  })
-                }
-                placeholder="Email"
-                className="w-full px-3 py-2 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
-              />
-              <textarea
-                value={editedData.customer.address || ''}
-                onChange={(e) =>
-                  setEditedData({
-                    ...editedData,
-                    customer: { ...editedData.customer, address: e.target.value },
-                  })
-                }
-                placeholder="Address"
-                rows={2}
-                className="w-full px-3 py-2 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)] resize-none"
-              />
-            </div>
-          ) : (
-            <div>
-              <p className="font-medium text-[rgb(250,250,250)]">{editedData.customer.name}</p>
-              {editedData.customer.company && (
-                <p className="text-sm text-[rgb(180,180,180)] mt-1">{editedData.customer.company}</p>
-              )}
-              {editedData.customer.email && (
-                <p className="text-sm text-[rgb(180,180,180)]">{editedData.customer.email}</p>
-              )}
-              {editedData.customer.address && (
-                <p className="text-sm text-[rgb(180,180,180)] whitespace-pre-line mt-1">{editedData.customer.address}</p>
-              )}
-            </div>
-          )}
+        {/* Billing Info */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Billing From */}
+          <div>
+            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">$ billing-from</h3>
+            {isEditing ? (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={editedData.from?.name || ''}
+                  onChange={(e) => updateFrom('name', e.target.value)}
+                  placeholder="Your Name"
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+                <input
+                  type="text"
+                  value={editedData.from?.company || ''}
+                  onChange={(e) => updateFrom('company', e.target.value)}
+                  placeholder="Your Company"
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+                <input
+                  type="email"
+                  value={editedData.from?.email || ''}
+                  onChange={(e) => updateFrom('email', e.target.value)}
+                  placeholder="Your Email"
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+                <textarea
+                  value={editedData.from?.address || ''}
+                  onChange={(e) => updateFrom('address', e.target.value)}
+                  placeholder="Your Address"
+                  rows={2}
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono resize-none"
+                />
+              </div>
+            ) : (
+              <div className="text-xs space-y-1">
+                <p className="font-bold text-foreground">{editedData.from?.name || 'Sender Name'}</p>
+                {editedData.from?.company && <p className="text-muted-foreground">{editedData.from.company}</p>}
+                {editedData.from?.email && <p className="text-muted-foreground">{editedData.from.email}</p>}
+                {editedData.from?.address && <p className="text-muted-foreground whitespace-pre-line">{editedData.from.address}</p>}
+              </div>
+            )}
+          </div>
+
+          {/* Billing To */}
+          <div>
+            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">$ billing-to</h3>
+            {isEditing ? (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={editedData.customer.name}
+                  onChange={(e) =>
+                    setEditedData({
+                      ...editedData,
+                      customer: { ...editedData.customer, name: e.target.value },
+                    })
+                  }
+                  placeholder="Customer Name"
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+                <input
+                  type="text"
+                  value={editedData.customer.company || ''}
+                  onChange={(e) =>
+                    setEditedData({
+                      ...editedData,
+                      customer: { ...editedData.customer, company: e.target.value },
+                    })
+                  }
+                  placeholder="Customer Company"
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+                <input
+                  type="email"
+                  value={editedData.customer.email || ''}
+                  onChange={(e) =>
+                    setEditedData({
+                      ...editedData,
+                      customer: { ...editedData.customer, email: e.target.value },
+                    })
+                  }
+                  placeholder="Customer Email"
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                />
+                <textarea
+                  value={editedData.customer.address || ''}
+                  onChange={(e) =>
+                    setEditedData({
+                      ...editedData,
+                      customer: { ...editedData.customer, address: e.target.value },
+                    })
+                  }
+                  placeholder="Customer Address"
+                  rows={2}
+                  className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono resize-none"
+                />
+              </div>
+            ) : (
+              <div className="text-xs space-y-1">
+                <p className="font-bold text-foreground">{editedData.customer.name}</p>
+                {editedData.customer.company && <p className="text-muted-foreground">{editedData.customer.company}</p>}
+                {editedData.customer.email && <p className="text-muted-foreground">{editedData.customer.email}</p>}
+                {editedData.customer.address && <p className="text-muted-foreground whitespace-pre-line">{editedData.customer.address}</p>}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Items Table */}
@@ -380,20 +480,20 @@ export default function InvoicePreview({
               </button>
             )}
           </div>
-          <div className="border border-[rgba(255,255,255,0.08)] rounded-lg overflow-hidden">
+          <div className="border border-border/50 rounded-lg overflow-hidden">
             <table className="w-full">
-              <thead className="bg-[rgb(20,20,20)]">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-[rgb(180,180,180)]">Description</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-[rgb(180,180,180)] w-24">Qty</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-[rgb(180,180,180)] w-32">Price</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-[rgb(180,180,180)] w-32">Total</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Description</th>
+                  <th className="px-4 py-3 text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest w-24">Qty</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-muted-foreground uppercase tracking-widest w-32">Price</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-muted-foreground uppercase tracking-widest w-32">Total</th>
                   {isEditing && <th className="w-10"></th>}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border/30">
                 {editedData.items.map((item, index) => (
-                  <tr key={index} className="border-t border-[rgba(255,255,255,0.08)]">
+                  <tr key={index} className="hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3">
                       {isEditing ? (
                         <input
@@ -401,10 +501,10 @@ export default function InvoicePreview({
                           value={item.description}
                           onChange={(e) => updateItem(index, 'description', e.target.value)}
                           placeholder="Description"
-                          className="w-full px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                          className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                         />
                       ) : (
-                        <span className="text-sm text-[rgb(250,250,250)]">{item.description}</span>
+                        <span className="text-xs text-foreground">{item.description}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -413,10 +513,10 @@ export default function InvoicePreview({
                           type="number"
                           value={item.quantity}
                           onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)}
-                          className="w-16 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] text-center focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                          className="w-16 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground text-center focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                         />
                       ) : (
-                        <span className="text-sm text-[rgb(250,250,250)]">{item.quantity}</span>
+                        <span className="text-xs text-foreground">{item.quantity}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -425,21 +525,21 @@ export default function InvoicePreview({
                           type="number"
                           value={item.unitPrice}
                           onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                          className="w-24 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] text-right focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                          className="w-24 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground text-right focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                           step="0.01"
                         />
                       ) : (
-                        <span className="text-sm text-[rgb(250,250,250)]">{formatCurrency(item.unitPrice, editedData.invoice.currency)}</span>
+                        <span className="text-xs text-foreground">{formatCurrency(item.unitPrice, editedData.invoice.currency)}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="text-sm font-medium text-[rgb(250,250,250)]">{formatCurrency(item.total, editedData.invoice.currency)}</span>
+                      <span className="text-xs font-bold text-foreground">{formatCurrency(item.total, editedData.invoice.currency)}</span>
                     </td>
                     {isEditing && (
                       <td className="px-2 py-3">
                         <button
                           onClick={() => removeItem(index)}
-                          className="p-1 text-[rgb(180,180,180)] hover:text-[rgb(239,68,68)] transition-colors"
+                          className="p-1 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -454,21 +554,21 @@ export default function InvoicePreview({
 
         {/* Discount */}
         {isEditing ? (
-          <div className="p-4 bg-[rgb(20,20,20)] rounded-lg border border-[rgba(255,255,255,0.08)]">
+          <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
             {editedData.discount ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-[rgb(250,250,250)]">Discount</h4>
+                  <h4 className="text-[10px] font-bold text-foreground">Discount</h4>
                   <button
                     onClick={removeDiscount}
-                    className="p-1 text-[rgb(180,180,180)] hover:text-[rgb(239,68,68)] transition-colors"
+                    className="p-1 text-muted-foreground hover:text-destructive transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-[rgb(180,180,180)]">Type</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Type</label>
                     <select
                       value={editedData.discount.percent !== undefined ? 'percent' : 'fixed'}
                       onChange={(e) => {
@@ -476,14 +576,14 @@ export default function InvoicePreview({
                         updateDiscount('percent', isPercent ? 10 : (undefined as any));
                         updateDiscount('amount', isPercent ? (undefined as any) : 0);
                       }}
-                      className="w-full mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                      className="w-full mt-1 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                     >
                       <option value="percent">Percent (%)</option>
                       <option value="fixed">Fixed ($)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-[rgb(180,180,180)]">Value</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Value</label>
                     <input
                       type="number"
                       value={editedData.discount.percent !== undefined ? editedData.discount.percent : editedData.discount.amount}
@@ -495,19 +595,19 @@ export default function InvoicePreview({
                           updateDiscount('amount', value);
                         }
                       }}
-                      className="w-full mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                      className="w-full mt-1 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                     />
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-[rgb(180,180,180)] mt-1">Amount</p>
-                    <p className="text-sm font-semibold text-[rgb(200,245,66)]">-{formatCurrency(editedData.discount.amount, editedData.invoice.currency)}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground mt-1 uppercase">Amount</p>
+                    <p className="text-sm font-bold text-primary">-{formatCurrency(editedData.discount.amount, editedData.invoice.currency)}</p>
                   </div>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => updateDiscount('percent', 0)}
-                className="w-full py-2 text-sm text-[rgb(180,180,180)] border border-dashed border-[rgba(255,255,255,0.2)] rounded hover:border-[rgb(200,245,66)] hover:text-[rgb(200,245,66)] transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2 text-xs font-bold text-muted-foreground border border-dashed border-border rounded hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2 uppercase tracking-widest"
               >
                 <Plus className="w-4 h-4" />
                 Add Discount
@@ -518,11 +618,11 @@ export default function InvoicePreview({
           editedData.discount && (
             <div className="flex justify-end">
               <div className="w-56">
-                <div className="flex justify-between text-sm">
-                  <span className="text-[rgb(180,180,180)]">
+                <div className="flex justify-between text-[10px] font-bold">
+                  <span className="text-muted-foreground uppercase tracking-widest">
                     Discount {editedData.discount.percent ? `(${editedData.discount.percent}%)` : ''}
                   </span>
-                  <span className="font-medium text-[rgb(200,245,66)]">-{formatCurrency(editedData.discount.amount, editedData.invoice.currency)}</span>
+                  <span className="text-primary">-{formatCurrency(editedData.discount.amount, editedData.invoice.currency)}</span>
                 </div>
               </div>
             </div>
@@ -531,10 +631,10 @@ export default function InvoicePreview({
 
         {/* Totals */}
         <div className="flex justify-end">
-          <div className="w-64 space-y-3 bg-[rgb(20,20,20)] p-4 rounded-[10px] border border-[rgba(96,96,104,0.1)]">
-            <div className="flex justify-between text-xs">
-              <span className="text-[rgb(163,163,163)] uppercase tracking-tighter">subtotal:</span>
-              <span className="font-bold text-[rgb(237,237,237)]">{formatCurrency(editedData.subtotal, editedData.invoice.currency)}</span>
+          <div className="w-64 space-y-3 bg-muted/30 p-4 rounded-[10px] border border-border/50">
+            <div className="flex justify-between text-[10px] font-bold">
+              <span className="text-muted-foreground uppercase tracking-widest">subtotal:</span>
+              <span className="text-foreground">{formatCurrency(editedData.subtotal, editedData.invoice.currency)}</span>
             </div>
 
             {isEditing ? (
@@ -543,40 +643,60 @@ export default function InvoicePreview({
                   type="number"
                   value={editedData.tax?.rate || 0}
                   onChange={(e) => updateTax('rate', e.target.value)}
-                  className="w-12 px-1.5 py-1 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded text-[10px] text-[rgb(237,237,237)] focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] font-mono"
+                  className="w-12 px-1.5 py-1 bg-background border border-border rounded-[4px] text-[10px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                   step="0.1"
                 />
-                <span className="text-[10px] text-[rgb(163,163,163)] uppercase">% tax:</span>
-                <span className="font-bold text-[rgb(237,237,237)] ml-auto text-xs">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">% tax:</span>
+                <span className="font-bold text-foreground ml-auto text-[10px]">
                   {formatCurrency(editedData.tax?.amount || 0, editedData.invoice.currency)}
                 </span>
               </div>
             ) : (
               editedData.tax && editedData.tax.rate > 0 && (
-                <div className="flex justify-between text-xs">
-                  <span className="text-[rgb(163,163,163)] uppercase tracking-tighter">
+                <div className="flex justify-between text-[10px] font-bold">
+                  <span className="text-muted-foreground uppercase tracking-widest">
                     tax_{editedData.tax.rate}%:
                   </span>
-                  <span className="font-bold text-[rgb(237,237,237)]">{formatCurrency(editedData.tax.amount, editedData.invoice.currency)}</span>
+                  <span className="text-foreground">{formatCurrency(editedData.tax.amount, editedData.invoice.currency)}</span>
                 </div>
               )
             )}
 
-            <div className="flex justify-between text-base font-bold pt-3 border-t border-[rgba(96,96,104,0.2)] text-[rgb(217,145,120)]">
-              <span className="uppercase tracking-widest text-xs mt-1">total:</span>
+            <div className="flex justify-between text-base font-bold pt-3 border-t border-border text-primary">
+              <span className="uppercase tracking-widest text-[10px] mt-1">total:</span>
               <span className="text-xl">{formatCurrency(editedData.total, editedData.invoice.currency)}</span>
             </div>
           </div>
         </div>
 
         {/* Notes & Dates */}
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[rgba(255,255,255,0.08)]">
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
           <div>
-            <p className="text-xs text-[rgb(180,180,180)]">Issue Date</p>
-            <p className="text-sm font-medium text-[rgb(250,250,250)] mt-1">{editedData.invoice.issueDate}</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest"># issue_date</p>
+            {isEditing ? (
+              <input
+                type="date"
+                value={editedData.invoice.issueDate}
+                onChange={(e) => {
+                  const newIssueDate = e.target.value;
+                  const newDueDate = calculateDueDate(newIssueDate, editedData.invoice.paymentTerms || 'Net 30');
+                  setEditedData({
+                    ...editedData,
+                    invoice: { 
+                      ...editedData.invoice, 
+                      issueDate: newIssueDate,
+                      dueDate: newDueDate || editedData.invoice.dueDate
+                    },
+                  });
+                }}
+                className="mt-1 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+              />
+            ) : (
+              <p className="text-xs font-bold text-foreground mt-1">{editedData.invoice.issueDate}</p>
+            )}
           </div>
           <div>
-            <p className="text-xs text-[rgb(180,180,180)]">Due Date</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest"># due_date</p>
             {isEditing ? (
               <input
                 type="date"
@@ -587,10 +707,10 @@ export default function InvoicePreview({
                     invoice: { ...editedData.invoice, dueDate: e.target.value },
                   })
                 }
-                className="mt-1 px-2 py-1.5 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)]"
+                className="mt-1 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
               />
             ) : (
-              <p className="text-sm font-medium text-[rgb(250,250,250)] mt-1">
+              <p className="text-xs font-bold text-foreground mt-1">
                 {editedData.invoice.dueDate || 'Not set'}
               </p>
             )}
@@ -600,8 +720,8 @@ export default function InvoicePreview({
         {/* Notes */}
         {isEditing && (
           <div>
-            <label className="text-xs font-semibold text-[rgb(180,180,180)] uppercase tracking-wide mb-2 block">
-              Notes (Optional)
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 block">
+              $ notes --optional
             </label>
             <textarea
               value={editedData.invoice.notes || ''}
@@ -613,7 +733,7 @@ export default function InvoicePreview({
               }
               placeholder="Payment terms, thank you note, etc."
               rows={3}
-              className="w-full px-3 py-2 bg-[rgb(8,8,8)] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[rgb(250,250,250)] focus:outline-none focus:ring-1 focus:ring-[rgb(200,245,66)] resize-none"
+              className="w-full px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono resize-none"
             />
           </div>
         )}

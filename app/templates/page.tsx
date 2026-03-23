@@ -28,7 +28,7 @@ export default function TemplatesPage() {
           {countries.map((country) => (
             <Link
               key={country.code}
-              href={`/?country=${country.code}`}
+              href={`/generate?country=${country.code}`}
               className="group bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 border border-gray-200 hover:border-primary-500"
             >
               <div className="text-5xl mb-4">{country.flag}</div>

@@ -1,13 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import InvoicePreview from '@/components/InvoicePreview';
 import Navbar from '@/components/Navbar';
 import { InvoiceData } from '@/lib/supabase';
 
+const countryToCurrency: { [key: string]: string } = {
+  US: 'USD',
+  UK: 'GBP',
+  AU: 'AUD',
+  CA: 'CAD',
+  DE: 'EUR',
+};
+
 export default function Home() {
+  const searchParams = useSearchParams();
+  const country = searchParams.get('country') || 'US';
+  const currency = countryToCurrency[country] || 'USD';
+
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -66,9 +79,17 @@ export default function Home() {
   };
 
   const sampleInvoice: InvoiceData = {
+    from: {
+      name: 'John Doe',
+      company: 'Creative Solutions LLC',
+      email: 'john@creative-solutions.com',
+      address: '123 Studio Way\nSan Francisco, CA 94103',
+    },
     customer: {
       name: 'ABC Company',
       company: 'ABC Inc.',
+      email: 'billing@abc-inc.com',
+      address: '456 Enterprise Blvd\nNew York, NY 10001',
     },
     items: [
       {
@@ -91,9 +112,9 @@ export default function Home() {
     },
     total: 3092.25,
     invoice: {
-      invoiceNumber: 'INV-001',
-      issueDate: '2024-01-15',
-      dueDate: '2024-02-15',
+      invoiceNumber: 'INV-2024-001',
+      issueDate: '2024-03-23',
+      dueDate: '2024-04-22',
       currency: 'USD',
     },
   };
@@ -109,19 +130,19 @@ export default function Home() {
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(96,96,104,0.2)] bg-[rgb(17,17,17)] text-xs text-[rgb(163,163,163)] mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card text-xs text-muted-foreground mb-10">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            V1.0.0 · <span className="text-[rgb(217,145,120)]">Ready to use</span>
+            V1.0.0 · <span className="text-primary">Ready to use</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5 max-w-4xl mx-auto tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5 max-w-4xl mx-auto tracking-tight text-foreground">
             $ ai --generate<br />
-            <span className="text-[rgb(217,145,120)]">invoice</span> --now
+            <span className="text-primary">invoice</span> --now
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base text-[rgb(163,163,163)] max-w-lg mx-auto mb-10 leading-relaxed font-mono">
+          <p className="text-base text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed font-mono">
             Tell us what you did, who it&apos;s for, and how much. AI handles the rest.
           </p>
 
@@ -129,12 +150,12 @@ export default function Home() {
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
-              className="group px-6 py-3 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
+              className="group px-6 py-3 bg-primary text-primary-foreground rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
             >
               $ start-generater --free
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <p className="text-xs text-[rgb(163,163,163)]">Natural language → Professional PDF</p>
+            <p className="text-xs text-muted-foreground">Natural language → Professional PDF</p>
           </div>
         </div>
       </section>
@@ -188,10 +209,12 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-6 items-start">
             {/* Chat Interface */}
             <div className="sticky top-6">
-              <ChatInterface onInvoiceGenerated={handleInvoiceGenerated} />
-            </div>
-
-            {/* Invoice Preview */}
+              <ChatInterface 
+              onInvoiceGenerated={handleInvoiceGenerated} 
+              isLoading={isDownloading} 
+              initialCurrency={currency}
+              initialCountry={country}
+            /></div>{/* Invoice Preview */}
             <div className="lg:pl-6">
               <InvoicePreview invoiceData={invoiceData || sampleInvoice} />
 
@@ -216,14 +239,14 @@ export default function Home() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[350px] h-[250px] bg-[rgba(217,145,120,0.08)] rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-            Stop wasting time <em className="text-[rgb(217,145,120)] not-italic">building</em> invoices.
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-foreground">
+            Stop wasting time <em className="text-primary not-italic">building</em> invoices.
           </h2>
-          <p className="text-[rgb(163,163,163)] mb-7 font-mono text-sm">5 free invoices per month. Upgrade when you&apos;re ready.</p>
+          <p className="text-muted-foreground mb-7 font-mono text-sm">5 free invoices per month. Upgrade when you&apos;re ready.</p>
 
           <button
             onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
-            className="group px-6 py-3 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent inline-flex items-center gap-2"
+            className="group px-6 py-3 bg-primary text-primary-foreground rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent inline-flex items-center gap-2"
           >
             $ start-deploying
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

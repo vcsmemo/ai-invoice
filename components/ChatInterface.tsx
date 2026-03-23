@@ -7,9 +7,16 @@ import { ChatMessage } from '@/lib/claude';
 interface ChatInterfaceProps {
   onInvoiceGenerated: (invoiceData: any) => void;
   isLoading?: boolean;
+  initialCurrency?: string;
+  initialCountry?: string;
 }
 
-export default function ChatInterface({ onInvoiceGenerated, isLoading = false }: ChatInterfaceProps) {
+export default function ChatInterface({ 
+  onInvoiceGenerated, 
+  isLoading = false,
+  initialCurrency = 'USD',
+  initialCountry = 'US'
+}: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -49,8 +56,8 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
         body: JSON.stringify({
           messages: [...messages, userMessage],
           userContext: {
-            currency: 'USD',
-            country: 'US',
+            currency: initialCurrency,
+            country: initialCountry,
           },
         }),
       });
@@ -90,15 +97,15 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-[rgb(17,17,17)] border border-[rgba(96,96,104,0.2)] rounded-[10px] overflow-hidden shadow-2xl relative">
+    <div className="flex flex-col h-[600px] bg-card border border-border rounded-[10px] overflow-hidden shadow-2xl relative">
       {/* Terminal Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[rgb(26,26,26)] border-b border-[rgba(96,96,104,0.2)]">
+      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
         </div>
-        <div className="text-[10px] font-bold text-[rgb(163,163,163)] uppercase tracking-widest">
+        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
           ai-invoice-terminal --prompt
         </div>
         <div className="w-10" /> {/* Spacer */}
@@ -112,12 +119,12 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
           >
             {/* Avatar */}
             {message.role === 'assistant' ? (
-              <div className="flex-shrink-0 w-8 h-8 bg-[rgb(217,145,120)] rounded-[6px] flex items-center justify-center">
-                <Bot className="w-4 h-4 text-[rgb(10,10,10)]" />
+              <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-[6px] flex items-center justify-center">
+                <Bot className="w-4 h-4 text-primary-foreground" />
               </div>
             ) : (
-              <div className="flex-shrink-0 w-8 h-8 bg-[rgb(38,38,38)] rounded-[6px] flex items-center justify-center border border-[rgba(96,96,104,0.2)]">
-                <User className="w-4 h-4 text-[rgb(163,163,163)]" />
+              <div className="flex-shrink-0 w-8 h-8 bg-secondary rounded-[6px] flex items-center justify-center border border-border">
+                <User className="w-4 h-4 text-muted-foreground" />
               </div>
             )}
 
@@ -125,8 +132,8 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
             <div
               className={`max-w-[85%] px-4 py-3 font-mono ${
                 message.role === 'user'
-                  ? 'bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[8px]'
-                  : 'bg-[rgb(26,26,26)] text-[rgb(237,237,237)] rounded-[8px] border border-[rgba(96,96,104,0.2)]'
+                  ? 'bg-primary text-primary-foreground rounded-[8px]'
+                  : 'bg-muted/50 text-foreground rounded-[8px] border border-border'
               }`}
             >
               <div className="flex items-center gap-2 mb-1 text-[10px] opacity-70 font-bold uppercase tracking-tighter">
@@ -144,14 +151,14 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
         {/* Typing indicator */}
         {(isGenerating || isLoading) && (
           <div className="flex gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-[rgb(217,145,120)] rounded-[6px] flex items-center justify-center">
-              <Bot className="w-4 h-4 text-[rgb(10,10,10)]" />
+            <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-[6px] flex items-center justify-center">
+              <Bot className="w-4 h-4 text-primary-foreground" />
             </div>
-            <div className="bg-[rgb(26,26,26)] px-4 py-3 rounded-[8px] border border-[rgba(96,96,104,0.2)]">
+            <div className="bg-muted/50 px-4 py-3 rounded-[8px] border border-border">
               <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 bg-[rgb(217,145,120)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-[rgb(217,145,120)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-[rgb(217,145,120)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -161,7 +168,7 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-[rgba(96,96,104,0.1)] bg-[rgb(12,12,12)]">
+      <div className="p-4 border-t border-border/50 bg-muted/20">
         <div className="flex gap-3 items-end">
           <div className="flex-1 relative">
             <textarea
@@ -169,7 +176,7 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Describe work... (cmd+enter to send)"
-              className="w-full px-4 py-3 bg-[rgb(10,10,10)] border border-[rgba(96,96,104,0.2)] rounded-[8px] resize-none focus:outline-none focus:ring-1 focus:ring-[rgb(217,145,120)] focus:border-transparent text-xs font-mono text-[rgb(237,237,237)] placeholder:text-[rgb(163,163,163)]"
+              className="w-full px-4 py-3 bg-background border border-border rounded-[8px] resize-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-xs font-mono text-foreground placeholder:text-muted-foreground"
               rows={2}
               disabled={isGenerating || isLoading}
             />
@@ -177,7 +184,7 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
           <button
             onClick={handleSend}
             disabled={!input.trim() || isGenerating || isLoading}
-            className="px-4 py-3 bg-[rgb(217,145,120)] text-[rgb(10,10,10)] rounded-[8px] hover:bg-[rgb(230,160,135)] disabled:bg-[rgb(38,38,38)] disabled:text-[rgb(163,163,163)] disabled:cursor-not-allowed transition-all flex items-center justify-center h-[52px] w-[52px] flex-shrink-0 glow-accent shadow-lg"
+            className="px-4 py-3 bg-primary text-primary-foreground rounded-[8px] hover:opacity-90 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed transition-all flex items-center justify-center h-[52px] w-[52px] flex-shrink-0 glow-accent shadow-lg"
           >
             {isGenerating || isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -186,7 +193,7 @@ export default function ChatInterface({ onInvoiceGenerated, isLoading = false }:
             )}
           </button>
         </div>
-        <p className="text-[10px] text-[rgb(163,163,163)] mt-2 text-center font-mono opacity-50 uppercase tracking-widest">
+        <p className="text-[10px] text-muted-foreground mt-2 text-center font-mono opacity-50 uppercase tracking-widest">
           ai --parser --active
         </p>
       </div>
