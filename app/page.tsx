@@ -122,16 +122,32 @@ function HomeContent() {
         throw new Error('Generated PDF is empty');
       }
 
+      // Create download link with detailed logging
+      console.log('[PDF Download] Creating object URL...');
       const url = window.URL.createObjectURL(blob);
+      console.log('[PDF Download] Object URL created:', url);
+
       const a = document.createElement('a');
       a.href = url;
       a.download = `${result.invoice.invoice_number}.pdf`;
+
+      console.log('[PDF Download] Appending link to DOM...');
       document.body.appendChild(a);
+
+      console.log('[PDF Download] Triggering click on download link...');
       a.click();
+
+      // Small delay to ensure download starts
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('[PDF Download] Removing link from DOM...');
       document.body.removeChild(a);
+
+      console.log('[PDF Download] Revoking object URL...');
       window.URL.revokeObjectURL(url);
 
-      console.log('[PDF Download] PDF downloaded successfully');
+      console.log('[PDF Download] ✅ Download process completed!');
+      alert(`✅ PDF downloaded successfully!\n\nFile: ${result.invoice.invoice_number}.pdf\n\nCheck your browser's Downloads folder.`);
     } catch (error) {
       console.error('[PDF Download] Error:', error);
       alert(error instanceof Error ? error.message : 'Failed to download PDF. Please try again.');

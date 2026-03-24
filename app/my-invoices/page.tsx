@@ -50,16 +50,36 @@ export default function MyInvoicesPage() {
       }
 
       const blob = await response.blob();
+      console.log('[MyInvoices] PDF blob size:', blob.size, 'bytes');
+
+      // Create download link with detailed logging
+      console.log('[MyInvoices] Creating object URL...');
       const url = window.URL.createObjectURL(blob);
+      console.log('[MyInvoices] Object URL created:', url);
+
       const a = document.createElement('a');
       a.href = url;
       a.download = `${invoiceNumber}.pdf`;
+
+      console.log('[MyInvoices] Appending link to DOM...');
       document.body.appendChild(a);
+
+      console.log('[MyInvoices] Triggering click on download link...');
       a.click();
+
+      // Small delay to ensure download starts
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('[MyInvoices] Removing link from DOM...');
       document.body.removeChild(a);
+
+      console.log('[MyInvoices] Revoking object URL...');
       window.URL.revokeObjectURL(url);
+
+      console.log('[MyInvoices] ✅ Download completed!');
+      alert(`✅ PDF downloaded successfully!\n\nFile: ${invoiceNumber}.pdf\n\nCheck your browser's Downloads folder.`);
     } catch (error) {
-      console.error('Error downloading PDF:', error);
+      console.error('[MyInvoices] Error downloading PDF:', error);
       alert('Failed to download PDF. Please try again.');
     } finally {
       setDownloadingId(null);
