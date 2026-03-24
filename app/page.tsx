@@ -130,15 +130,28 @@ function HomeContent() {
       const a = document.createElement('a');
       a.href = url;
       a.download = `${result.invoice.invoice_number}.pdf`;
+      a.style.display = 'none';
+      // Add attributes to ensure download works
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
 
       console.log('[PDF Download] Appending link to DOM...');
       document.body.appendChild(a);
 
+      // Try multiple click methods to ensure download triggers
       console.log('[PDF Download] Triggering click on download link...');
       a.click();
 
+      // Fallback: create mouse event
+      const clickEvent = new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      });
+      a.dispatchEvent(clickEvent);
+
       // Small delay to ensure download starts
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       console.log('[PDF Download] Removing link from DOM...');
       document.body.removeChild(a);
@@ -147,7 +160,9 @@ function HomeContent() {
       window.URL.revokeObjectURL(url);
 
       console.log('[PDF Download] ✅ Download process completed!');
-      alert(`✅ PDF downloaded successfully!\n\nFile: ${result.invoice.invoice_number}.pdf\n\nCheck your browser's Downloads folder.`);
+
+      // Show success message
+      alert(`✅ PDF下载成功！\n\n文件名：${result.invoice.invoice_number}.pdf\n\n请查看浏览器的下载文件夹。`);
     } catch (error) {
       console.error('[PDF Download] Error:', error);
       alert(error instanceof Error ? error.message : 'Failed to download PDF. Please try again.');
