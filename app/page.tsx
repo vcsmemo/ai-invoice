@@ -60,7 +60,7 @@ function HomeContent() {
     // Check if user is logged in
     if (!session?.user) {
       console.log('[PDF Download] User not logged in');
-      alert('请先登录才能下载发票。注册即送5个免费积分！');
+      alert('Please sign in to download invoices. You\'ll get 5 free credits to start!');
       setShowLoginPrompt(true);
       return;
     }
@@ -171,7 +171,7 @@ function HomeContent() {
       console.log('[PDF Download] ✅ Download process completed!');
 
       // Show success message
-      alert(`✅ PDF下载成功！\n\n文件名：${result.invoice.invoice_number}.pdf\n\n请查看浏览器的下载文件夹。`);
+      alert(`✅ PDF downloaded successfully!\n\nFile: ${result.invoice.invoice_number}.pdf\n\nPlease check your browser's Downloads folder.`);
     } catch (error) {
       console.error('[PDF Download] Error:', error);
       alert(error instanceof Error ? error.message : 'Failed to download PDF. Please try again.');

@@ -92,10 +92,10 @@ export default function MyInvoicesPage() {
       console.log('[MyInvoices] ✅ Download completed!');
 
       // Show success message
-      alert(`✅ PDF下载成功！\n\n文件名：${invoiceNumber}.pdf\n\n请查看浏览器的下载文件夹。`);
+      alert(`✅ PDF downloaded successfully!\n\nFile: ${invoiceNumber}.pdf\n\nPlease check your browser's Downloads folder.`);
     } catch (error) {
       console.error('[MyInvoices] Error downloading PDF:', error);
-      alert('PDF下载失败，请重试。');
+      alert('Failed to download PDF. Please try again.');
     } finally {
       setDownloadingId(null);
     }
