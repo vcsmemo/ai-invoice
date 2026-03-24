@@ -34,15 +34,51 @@ export async function POST(request: NextRequest) {
     console.log('[Profile API] Updating profile for user:', session.user.id);
 
     const body = await request.json();
-    console.log('[Profile API] Request body:', body);
+    console.log('[Profile API] Request body keys:', Object.keys(body));
+    console.log('[Profile API] Request body:', JSON.stringify(body, null, 2));
 
-    // Validate numeric fields
-    if (body.default_tax_rate !== undefined) {
-      body.default_tax_rate = parseFloat(body.default_tax_rate) || 0;
+    // Filter out readonly fields and empty strings
+    const allowedFields = [
+      'company_name',
+      'logo_url',
+      'address',
+      'phone',
+      'website',
+      'tax_id',
+      'payment_instructions',
+      'default_currency',
+      'default_tax_rate',
+      'invoice_prefix',
+      'payment_terms',
+    ];
+
+    const updates: any = {};
+
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        // Convert empty strings to null for text fields
+        if (typeof body[field] === 'string' && body[field].trim() === '') {
+          updates[field] = null;
+        } else if (field === 'default_tax_rate') {
+          // Validate numeric field
+          updates[field] = parseFloat(body[field]) || 0;
+        } else {
+          updates[field] = body[field];
+        }
+      }
     }
 
-    console.log('[Profile API] Calling updateProfile with:', body);
-    const profile = await updateProfile(session.user.id, body);
+    console.log('[Profile API] Filtered updates:', JSON.stringify(updates, null, 2));
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'No fields to update',
+      });
+    }
+
+    console.log('[Profile API] Calling updateProfile with updates');
+    const profile = await updateProfile(session.user.id, updates);
     console.log('[Profile API] Update result:', profile);
 
     if (!profile) {
@@ -61,9 +97,16 @@ export async function POST(request: NextRequest) {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
+      code: error?.code,
+      hint: error?.hint,
+      details: error?.details,
     });
     return NextResponse.json(
-      { error: 'Failed to update profile', details: error?.message || 'Unknown error' },
+      {
+        error: 'Failed to update profile',
+        details: error?.message || 'Unknown error',
+        ...(error?.hint && { hint: error.hint })
+      },
       { status: 500 }
     );
   }

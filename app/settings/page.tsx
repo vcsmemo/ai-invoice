@@ -68,14 +68,26 @@ export default function SettingsPage() {
         body: JSON.stringify(profile),
       });
 
-      if (!response.ok) throw new Error('Failed to save profile');
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[Settings] Save failed:', errorData);
+        throw new Error(errorData.details || errorData.error || 'Failed to save profile');
+      }
+
+      const data = await response.json();
+      console.log('[Settings] Save success:', data);
 
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('[Settings] Error saving profile:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
+
+      // Show detailed error in alert for debugging
+      if (error instanceof Error) {
+        alert(`Save Failed: ${error.message}\n\nPlease check F12 Console for details.`);
+      }
     } finally {
       setIsSaving(false);
     }
