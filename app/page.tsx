@@ -291,7 +291,7 @@ function HomeContent() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-6 max-w-5xl mx-auto w-full">
+      <section id="how" className="py-20 px-6 max-w-5xl mx-auto w-full scroll-mt-28">
         <div className="mb-12">
           <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[rgb(217,145,120)] mb-3 flex items-center gap-2">
             <span className="w-8 h-px bg-[rgb(217,145,120)]/30" />

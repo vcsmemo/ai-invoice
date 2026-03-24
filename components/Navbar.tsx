@@ -16,9 +16,16 @@ export default function Navbar() {
       <Logo variant="compact" className="hover:opacity-80 transition-opacity" />
 
       <div className="flex items-center gap-6">
-        <Link href="#how" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
+        <button
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/#how';
+            }
+          }}
+          className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
+        >
           How It Works
-        </Link>
+        </button>
         <Link href="/templates" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
           Templates
         </Link>
