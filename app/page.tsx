@@ -9,6 +9,7 @@ import LoginPrompt from '@/components/LoginPrompt';
 import StatsCard from '@/components/StatsCard';
 import StatsChart from '@/components/StatsChart';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { useSession } from 'next-auth/react';
 import { InvoiceData } from '@/lib/supabase';
 
@@ -35,6 +36,12 @@ function HomeContent() {
   };
 
   const handleDownload = async () => {
+    // Prevent duplicate downloads
+    if (isDownloading) {
+      console.log('[handleDownload] Already downloading, ignoring duplicate call');
+      return;
+    }
+
     console.log('[handleDownload] ========== FUNCTION STARTED ==========');
     console.log('[handleDownload] session:', session);
     console.log('[handleDownload] session.user:', session?.user);
@@ -392,6 +399,9 @@ function HomeContent() {
           </button>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

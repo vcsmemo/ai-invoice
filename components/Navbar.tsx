@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FileText, LogOut, User, Settings } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { ThemeToggle } from './ThemeToggle';
+import Logo from './Logo';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -12,11 +13,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between bg-background/80 backdrop-blur-xl border-b border-border">
-      <Link href="/" className="flex items-center gap-2 group">
-        <div className="w-2 h-2 rounded-full bg-primary group-hover:animate-pulse" />
-        <span className="font-bold text-foreground text-sm tracking-tight">AI Invoice Generator</span>
-        <span className="w-1.5 h-4 bg-primary animate-blink" />
-      </Link>
+      <Logo variant="compact" className="hover:opacity-80 transition-opacity" />
 
       <div className="flex items-center gap-6">
         <Link href="#how" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
