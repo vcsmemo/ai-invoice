@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getInvoiceById } from '@/lib/supabase';
+import { getInvoiceById, updateUserCredits, getSupabaseAdmin } from '@/lib/supabase';
 import { pdf } from '@react-pdf/renderer';
 import React from 'react';
 
@@ -51,6 +51,24 @@ export async function GET(
       }
 
       console.log('[PDF API] PDF generated successfully, size:', (pdfBytes as any).length, 'bytes');
+
+      // Deduct credit only after PDF is successfully generated
+      // Check if we've already deducted credits for this invoice
+      // We use the invoice status field to track this
+      if (invoice.status === 'draft') {
+        console.log('[PDF API] First time download, deducting credit for user:', invoice.user_id);
+        await updateUserCredits(invoice.user_id, -1);
+
+        // Update invoice status to 'sent' to indicate credits have been deducted
+        const admin = getSupabaseAdmin();
+        await admin
+          .from('invoices')
+          .update({ status: 'sent' })
+          .eq('id', invoiceId);
+        console.log('[PDF API] Invoice status updated to sent, credit deducted');
+      } else {
+        console.log('[PDF API] Invoice already downloaded (status:', invoice.status, '), skipping credit deduction');
+      }
 
       // Return PDF as downloadable file
       return new NextResponse(Buffer.from(pdfBytes as any), {

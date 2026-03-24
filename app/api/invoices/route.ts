@@ -74,9 +74,8 @@ export async function POST(request: NextRequest) {
 
     console.log('[Invoice API] Invoice created in database:', invoice.id);
 
-    // Deduct credit
-    await updateUserCredits(session.user.id, -1);
-    console.log('[Invoice API] Credit deducted');
+    // Note: Credits will be deducted after PDF is successfully generated
+    // This ensures users are only charged when PDF download is successful
 
     return NextResponse.json({
       success: true,
