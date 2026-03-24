@@ -29,7 +29,7 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   };
 
   // Header - Logo and Title
-  doc.setFillColor(245, 158, 11); // Amber color
+  doc.setFillColor(245, 158, 11);
   doc.rect(margin, yPosition, 20, 20, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(14);
@@ -46,10 +46,12 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   // Invoice number
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(\`#\${invoice.invoiceNumber || invoiceNumber}\`, margin, yPosition + 45);
+  const invNum = `#${invoice.invoiceNumber || invoiceNumber}`;
+  doc.text(invNum, margin, yPosition + 45);
 
   if (invoice.poNumber) {
-    doc.text(\`PO: \${invoice.poNumber}\`, margin, yPosition + 52);
+    const poText = `PO: ${invoice.poNumber}`;
+    doc.text(poText, margin, yPosition + 52);
   }
 
   // Total amount on the right
@@ -60,7 +62,8 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text(formatCurrency(total, currency), pageWidth - margin, yPosition + 35, { align: 'right' });
+  const totalAmt = formatCurrency(total, currency);
+  doc.text(totalAmt, pageWidth - margin, yPosition + 35, { align: 'right' });
 
   yPosition += 65;
 
@@ -98,7 +101,8 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   }
   if (from?.taxId) {
     doc.setFontSize(9);
-    yPosition = addText(\`Tax ID: \${from.taxId}\`, margin, yPosition, 9);
+    const taxIdText = `Tax ID: ${from.taxId}`;
+    yPosition = addText(taxIdText, margin, yPosition, 9);
   }
 
   // Bill To Section
@@ -184,7 +188,8 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
     if (item.sku) {
       doc.setFontSize(8);
       doc.setTextColor(107, 114, 128);
-      yPosition = addText(\`SKU: \${item.sku}\`, colX.description, yPosition + 5, 8);
+      const skuText = `SKU: ${item.sku}`;
+      yPosition = addText(skuText, colX.description, yPosition + 5, 8);
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
     }
@@ -193,10 +198,12 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
     doc.text(String(item.quantity), colX.qty, yPosition, { align: 'center' });
 
     // Price
-    doc.text(formatCurrency(item.unitPrice, currency), colX.price, yPosition, { align: 'right' });
+    const priceText = formatCurrency(item.unitPrice, currency);
+    doc.text(priceText, colX.price, yPosition, { align: 'right' });
 
     // Total
-    doc.text(formatCurrency(item.total, currency), colX.total, yPosition, { align: 'right' });
+    const totalText = formatCurrency(item.total, currency);
+    doc.text(totalText, colX.total, yPosition, { align: 'right' });
 
     yPosition += 8;
   });
@@ -226,7 +233,7 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   addTotalRow('Subtotal', formatCurrency(subtotal, currency));
 
   if (tax && tax.rate > 0) {
-    const taxLabel = tax.description ? \`\${tax.description} (\${tax.rate}%)\` : \`Tax (\${tax.rate}%)\`;
+    const taxLabel = tax.description ? `${tax.description} (${tax.rate}%)` : `Tax (${tax.rate}%)`;
     addTotalRow(taxLabel, formatCurrency(tax.amount, currency));
   }
 
@@ -294,10 +301,12 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
       yPosition = addText(payment.instructions, margin, yPosition, 10);
     }
     if (payment.bankAccount) {
-      yPosition = addText(\`Bank Account: \${payment.bankAccount}\`, margin, yPosition, 10);
+      const bankText = `Bank Account: ${payment.bankAccount}`;
+      yPosition = addText(bankText, margin, yPosition, 10);
     }
     if (payment.paypalEmail) {
-      yPosition = addText(\`PayPal: \${payment.paypalEmail}\`, margin, yPosition, 10);
+      const paypalText = `PayPal: ${payment.paypalEmail}`;
+      yPosition = addText(paypalText, margin, yPosition, 10);
     }
   }
 
