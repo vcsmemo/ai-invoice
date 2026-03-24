@@ -35,9 +35,11 @@ function HomeContent() {
   };
 
   const handleDownload = async () => {
-    console.log('[handleDownload] FUNCTION CALLED!');
+    console.log('[handleDownload] ========== FUNCTION STARTED ==========');
     console.log('[handleDownload] session:', session);
     console.log('[handleDownload] session.user:', session?.user);
+    console.log('[handleDownload] invoiceData:', invoiceData);
+    console.log('[handleDownload] isDownloading:', isDownloading);
 
     // Use either generated invoice or sample invoice
     const dataToDownload = invoiceData || sampleInvoice;
@@ -51,7 +53,7 @@ function HomeContent() {
     // Check if user is logged in
     if (!session?.user) {
       console.log('[PDF Download] User not logged in');
-      alert('Please sign in to download invoices. You\'ll get 5 free credits to start!');
+      alert('请先登录才能下载发票。注册即送5个免费积分！');
       setShowLoginPrompt(true);
       return;
     }
@@ -337,7 +339,11 @@ function HomeContent() {
               initialCountry={country}
             /></div>{/* Invoice Preview */}
             <div className="lg:pl-6">
-              <InvoicePreview invoiceData={invoiceData || sampleInvoice} />
+              <InvoicePreview
+                invoiceData={invoiceData || sampleInvoice}
+                onDownload={handleDownload}
+                isDownloading={isDownloading}
+              />
 
               <div className="mt-5 text-center">
                 <button

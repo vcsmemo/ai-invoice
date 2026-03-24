@@ -235,7 +235,14 @@ export default function InvoicePreview({
                 edit
               </button>
               <button
-                onClick={onDownload}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[InvoicePreview] Export PDF button CLICKED!');
+                  console.log('[InvoicePreview] onDownload:', onDownload ? 'exists' : 'NULL');
+                  console.log('[InvoicePreview] isDownloading:', isDownloading);
+                  onDownload?.();
+                }}
                 disabled={isDownloading}
                 className="px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary rounded-[6px] hover:opacity-90 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 uppercase tracking-tighter glow-accent"
               >
