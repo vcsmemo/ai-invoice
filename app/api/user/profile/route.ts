@@ -13,12 +13,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    console.log('[Profile GET] Fetching profile for user:', session.user.id);
+
     const profile = await getOrCreateProfile(session.user.id);
+
+    console.log('[Profile GET] Returning profile:', profile);
 
     return NextResponse.json({ profile });
   } catch (error) {
-    console.error('Error fetching profile:', error);
-    return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
+    console.error('[Profile GET] Error fetching profile:', error);
+    console.error('[Profile GET] Error stack:', error?.stack);
+    return NextResponse.json(
+      { error: 'Failed to fetch profile', details: error?.message },
+      { status: 500 }
+    );
   }
 }
 
