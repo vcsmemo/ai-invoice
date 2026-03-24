@@ -22,9 +22,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ profile });
   } catch (error) {
     console.error('[Profile GET] Error fetching profile:', error);
-    console.error('[Profile GET] Error stack:', error?.stack);
+    const err = error as any;
+    console.error('[Profile GET] Error stack:', err?.stack);
     return NextResponse.json(
-      { error: 'Failed to fetch profile', details: error?.message },
+      { error: 'Failed to fetch profile', details: err?.message },
       { status: 500 }
     );
   }
