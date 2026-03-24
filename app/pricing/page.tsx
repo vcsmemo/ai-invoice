@@ -167,7 +167,7 @@ export default function PricingPage() {
 
             {/* Professional Pack - Popular */}
             <div className="bg-card p-8 hover:bg-muted/10 transition-colors relative group z-10 shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)]">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
                 <div className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg glow-accent">
                   Most Popular
                 </div>

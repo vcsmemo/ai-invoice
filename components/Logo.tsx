@@ -10,7 +10,7 @@ export default function Logo({ variant = 'full', className = '' }: LogoProps) {
     return (
       <Link href="/" className={`flex items-center gap-2 ${className}`}>
         <div className="relative w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg glow-accent">
-          <span className="text-primary-foreground font-bold text-lg">AI</span>
+          <span className="text-primary-foreground font-bold text-sm">AI</span>
         </div>
       </Link>
     );
@@ -20,10 +20,10 @@ export default function Logo({ variant = 'full', className = '' }: LogoProps) {
     return (
       <Link href="/" className={`flex items-center gap-2 ${className}`}>
         <div className="relative w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg glow-accent">
-          <span className="text-primary-foreground font-bold text-lg">AI</span>
+          <span className="text-primary-foreground font-bold text-sm">AI</span>
         </div>
-        <span className="font-bold text-lg tracking-tight">
-          Invoice<span className="text-primary">.ai</span>
+        <span className="font-bold text-base tracking-tight">
+          <span className="text-primary">AI</span> Invoice Generator
         </span>
       </Link>
     );
@@ -32,14 +32,11 @@ export default function Logo({ variant = 'full', className = '' }: LogoProps) {
   return (
     <Link href="/" className={`flex items-center gap-3 ${className}`}>
       <div className="relative w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg glow-accent">
-        <span className="text-primary-foreground font-bold text-xl">AI</span>
+        <span className="text-primary-foreground font-bold text-lg">AI</span>
       </div>
       <div className="flex flex-col">
-        <span className="font-bold text-xl tracking-tight leading-none">
-          Invoice<span className="text-primary">.ai</span>
-        </span>
-        <span className="text-[10px] text-muted-foreground font-mono tracking-wider uppercase">
-          AI Invoice Generator
+        <span className="font-bold text-lg tracking-tight leading-none">
+          <span className="text-primary">AI</span> Invoice Generator
         </span>
       </div>
     </Link>

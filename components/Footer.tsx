@@ -14,8 +14,8 @@ export default function Footer() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-sm">AI</span>
                 </div>
-                <span className="font-bold text-lg">
-                  Invoice<span className="text-primary">.ai</span>
+                <span className="font-bold text-base">
+                  <span className="text-primary">AI</span> Invoice Generator
                 </span>
               </div>
             </Link>
@@ -89,7 +89,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Invoice.ai. All rights reserved.
+            © {currentYear} AI Invoice Generator. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
             Made with ❤️ for freelancers worldwide

@@ -34,6 +34,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'AI Invoice Generator' }],
   creator: 'AI Invoice Generator',
   publisher: 'AI Invoice Generator',
+  applicationName: 'AI Invoice Generator',
 
   // Open Graph / Facebook
   openGraph: {
@@ -64,9 +65,12 @@ export const metadata: Metadata = {
 
   // Icons
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
   },
 
   // Manifest
