@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvoiceById } from '@/lib/supabase';
-import { pdf } from '@react-pdf/renderer';
-import InvoicePDF from '@/components/InvoicePDF';
+import { pdf, StyleSheet, Document, Page } from '@react-pdf/renderer';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,11 +20,23 @@ export async function GET(
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }
 
-    console.log('[PDF API] Invoice found, data:', JSON.stringify(invoice).substring(0, 200));
+    console.log('[PDF API] Invoice found');
+    console.log('[PDF API] Invoice number:', invoice.invoice_number);
 
     try {
+      // Validate invoice data structure
+      if (!invoice.invoice_data) {
+        throw new Error('Missing invoice_data');
+      }
+
+      console.log('[PDF API] Invoice data keys:', Object.keys(invoice.invoice_data));
+
+      // Import PDF component dynamically to avoid build issues
+      const { default: InvoicePDF } = await import('@/components/InvoicePDF');
+
       console.log('[PDF API] Creating PDF document...');
-      // Generate PDF
+
+      // Create PDF document
       const pdfDoc = pdf(
         <InvoicePDF
           invoiceData={invoice.invoice_data}
@@ -33,23 +44,31 @@ export async function GET(
         />
       );
 
-      console.log('[PDF API] Converting to buffer...');
+      console.log('[PDF API] Rendering to buffer...');
       const pdfBytes = await pdfDoc.toBuffer();
 
-      console.log('[PDF API] PDF generated successfully, size:', (pdfBytes as any).length, 'bytes');
+      if (!pdfBytes || pdfBytes.length === 0) {
+        throw new Error('PDF buffer is empty');
+      }
+
+      console.log('[PDF API] PDF generated successfully, size:', pdfBytes.length, 'bytes');
 
       // Return PDF as downloadable file
-      return new NextResponse(pdfBytes as any, {
+      return new NextResponse(Buffer.from(pdfBytes), {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename="${invoice.invoice_number}.pdf"`,
-          'Content-Length': (pdfBytes as any).length.toString(),
+          'Content-Length': pdfBytes.length.toString(),
         },
       });
     } catch (pdfError: any) {
       console.error('[PDF API] PDF generation error:', pdfError);
-      console.error('[PDF API] Error stack:', pdfError?.stack);
+      console.error('[PDF API] Error details:', {
+        message: pdfError?.message,
+        stack: pdfError?.stack,
+        name: pdfError?.name,
+      });
       return NextResponse.json(
         {
           error: 'Failed to generate PDF',
