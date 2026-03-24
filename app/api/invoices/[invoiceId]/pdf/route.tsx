@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvoiceById, updateUserCredits, getSupabaseAdmin } from '@/lib/supabase';
-import { pdf } from '@react-pdf/renderer';
-import InvoicePDF from '@/components/InvoicePDF';
+import { generatePDF } from '@/lib/pdf-generator';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,24 +30,16 @@ export async function GET(
       }
 
       console.log('[PDF API] Invoice data keys:', Object.keys(invoice.invoice_data));
-      console.log('[PDF API] Creating PDF document...');
+      console.log('[PDF API] Creating PDF document using jsPDF...');
 
-      // Create PDF document using direct JSX
-      const pdfDoc = pdf(
-        <InvoicePDF
-          invoiceData={invoice.invoice_data}
-          invoiceNumber={invoice.invoice_number}
-        />
-      );
+      // Generate PDF using jsPDF
+      const pdfBytes = await generatePDF(invoice.invoice_data, invoice.invoice_number);
 
-      console.log('[PDF API] Rendering to buffer...');
-      const pdfBytes = await pdfDoc.toBuffer();
-
-      if (!pdfBytes || (pdfBytes as any).length === 0) {
+      if (!pdfBytes || pdfBytes.length === 0) {
         throw new Error('PDF buffer is empty');
       }
 
-      console.log('[PDF API] PDF generated successfully, size:', (pdfBytes as any).length, 'bytes');
+      console.log('[PDF API] PDF generated successfully, size:', pdfBytes.length, 'bytes');
 
       // Deduct credit only after PDF is successfully generated
       // Check if we've already deducted credits for this invoice
@@ -69,12 +60,12 @@ export async function GET(
       }
 
       // Return PDF as downloadable file
-      return new NextResponse(Buffer.from(pdfBytes as any), {
+      return new NextResponse(pdfBytes, {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename="${invoice.invoice_number}.pdf"`,
-          'Content-Length': (pdfBytes as any).length.toString(),
+          'Content-Length': pdfBytes.length.toString(),
         },
       });
     } catch (pdfError: any) {
