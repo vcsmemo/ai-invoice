@@ -47,19 +47,19 @@ export async function GET(
       console.log('[PDF API] Rendering to buffer...');
       const pdfBytes = await pdfDoc.toBuffer();
 
-      if (!pdfBytes || pdfBytes.length === 0) {
+      if (!pdfBytes || (pdfBytes as any).length === 0) {
         throw new Error('PDF buffer is empty');
       }
 
-      console.log('[PDF API] PDF generated successfully, size:', pdfBytes.length, 'bytes');
+      console.log('[PDF API] PDF generated successfully, size:', (pdfBytes as any).length, 'bytes');
 
       // Return PDF as downloadable file
-      return new NextResponse(Buffer.from(pdfBytes), {
+      return new NextResponse(Buffer.from(pdfBytes as any), {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename="${invoice.invoice_number}.pdf"`,
-          'Content-Length': pdfBytes.length.toString(),
+          'Content-Length': (pdfBytes as any).length.toString(),
         },
       });
     } catch (pdfError: any) {
