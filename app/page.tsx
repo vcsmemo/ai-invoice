@@ -101,9 +101,16 @@ function HomeContent() {
       console.log('[PDF Download] PDF generation response status:', pdfResponse.status);
 
       if (!pdfResponse.ok) {
-        const errorData = await pdfResponse.json();
-        console.error('[PDF Download] PDF generation failed:', errorData);
-        throw new Error(errorData.error || 'Failed to generate PDF');
+        const errorText = await pdfResponse.text();
+        console.error('[PDF Download] PDF generation failed - Response text:', errorText);
+        console.error('[PDF Download] Full response:', {
+          status: pdfResponse.status,
+          statusText: pdfResponse.statusText,
+          headers: Object.fromEntries(pdfResponse.headers.entries()),
+          body: errorText
+        });
+        alert(`PDF Generation Failed (Status ${pdfResponse.status}):\n\n${errorText}\n\nPlease check Vercel logs for details.`);
+        throw new Error(errorText || 'Failed to generate PDF');
       }
 
       // Step 3: Download PDF
