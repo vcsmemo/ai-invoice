@@ -36,13 +36,12 @@ export async function GET(
       // Dynamic import to avoid build issues with @react-pdf/renderer
       const { default: InvoicePDF } = await import('@/components/InvoicePDF');
 
-      // Create PDF document using React.createElement
-      const pdfDoc = pdf(
-        React.createElement(InvoicePDF, {
-          invoiceData: invoice.invoice_data,
-          invoiceNumber: invoice.invoice_number
-        })
-      );
+      // Create PDF document using React.createElement with type assertion
+      const element = React.createElement(InvoicePDF, {
+        invoiceData: invoice.invoice_data,
+        invoiceNumber: invoice.invoice_number
+      });
+      const pdfDoc = pdf(element as any);
 
       console.log('[PDF API] Rendering to buffer...');
       const pdfBytes = await pdfDoc.toBuffer();

@@ -27,19 +27,26 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
+      console.error('[Profile API] No session found');
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    console.log('[Profile API] Updating profile for user:', session.user.id);
+
     const body = await request.json();
+    console.log('[Profile API] Request body:', body);
 
     // Validate numeric fields
     if (body.default_tax_rate !== undefined) {
       body.default_tax_rate = parseFloat(body.default_tax_rate) || 0;
     }
 
+    console.log('[Profile API] Calling updateProfile with:', body);
     const profile = await updateProfile(session.user.id, body);
+    console.log('[Profile API] Update result:', profile);
 
     if (!profile) {
+      console.error('[Profile API] updateProfile returned null');
       return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
     }
 
@@ -48,8 +55,16 @@ export async function POST(request: NextRequest) {
       profile,
       message: 'Profile updated successfully',
     });
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[Profile API] Error updating profile:', error);
+    console.error('[Profile API] Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    });
+    return NextResponse.json(
+      { error: 'Failed to update profile', details: error?.message || 'Unknown error' },
+      { status: 500 }
+    );
   }
 }
