@@ -62,16 +62,21 @@ export default function SettingsPage() {
     setSaveStatus('idle');
 
     try {
+      console.log('[Settings] Sending profile data:', profile);
+
       const response = await fetch('/api/user/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile),
       });
 
+      console.log('[Settings] Response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('[Settings] Save failed:', errorData);
-        throw new Error(errorData.details || errorData.error || 'Failed to save profile');
+        console.error('[Settings] Save failed - Full error response:', JSON.stringify(errorData, null, 2));
+        const errorMessage = errorData.details || errorData.error || errorData.hint || 'Failed to save profile';
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -86,7 +91,7 @@ export default function SettingsPage() {
 
       // Show detailed error in alert for debugging
       if (error instanceof Error) {
-        alert(`Save Failed: ${error.message}\n\nPlease check F12 Console for details.`);
+        alert(`Save Failed:\n\n${error.message}\n\nPlease check F12 Console for full error details.`);
       }
     } finally {
       setIsSaving(false);
