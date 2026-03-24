@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvoiceById } from '@/lib/supabase';
-import { pdf, StyleSheet, Document, Page } from '@react-pdf/renderer';
+import { pdf } from '@react-pdf/renderer';
+import React from 'react';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,18 +31,17 @@ export async function GET(
       }
 
       console.log('[PDF API] Invoice data keys:', Object.keys(invoice.invoice_data));
-
-      // Import PDF component dynamically to avoid build issues
-      const { default: InvoicePDF } = await import('@/components/InvoicePDF');
-
       console.log('[PDF API] Creating PDF document...');
 
-      // Create PDF document
+      // Dynamic import to avoid build issues with @react-pdf/renderer
+      const { default: InvoicePDF } = await import('@/components/InvoicePDF');
+
+      // Create PDF document using React.createElement
       const pdfDoc = pdf(
-        <InvoicePDF
-          invoiceData={invoice.invoice_data}
-          invoiceNumber={invoice.invoice_number}
-        />
+        React.createElement(InvoicePDF, {
+          invoiceData: invoice.invoice_data,
+          invoiceNumber: invoice.invoice_number
+        })
       );
 
       console.log('[PDF API] Rendering to buffer...');
