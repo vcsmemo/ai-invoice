@@ -90,7 +90,7 @@ export const authOptions: NextAuthOptions = {
         return true;
       }
     },
-    async session({ session, user }) {
+    async session({ session, token }) {
       if (session.user) {
         try {
           // Fetch fresh user data from database
@@ -98,24 +98,44 @@ export const authOptions: NextAuthOptions = {
           if (dbUser) {
             session.user.id = dbUser.id;
             session.user.credits_remaining = dbUser.credits_remaining;
+            console.log('[Auth] Session updated with DB user ID:', dbUser.id);
           } else {
             // Use data from token if database fetch fails
-            session.user.id = (user as any)?.id || session.user.email || 'unknown';
-            session.user.credits_remaining = (user as any)?.credits_remaining || 5;
+            session.user.id = (token as any)?.id || session.user.email || 'unknown';
+            session.user.credits_remaining = (token as any)?.credits_remaining || 5;
+            console.warn('[Auth] DB user not found, using token ID:', session.user.id);
           }
         } catch (error) {
           console.error('[Auth] Error fetching user in session callback:', error);
           // Set default values on error
-          session.user.id = (user as any)?.id || session.user.email || 'unknown';
-          session.user.credits_remaining = (user as any)?.credits_remaining || 5;
+          session.user.id = (token as any)?.id || session.user.email || 'unknown';
+          session.user.credits_remaining = (token as any)?.credits_remaining || 5;
         }
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
+        // User object is only available on first sign in
+        // Store the correct database ID from user object
         token.id = user.id;
         token.credits_remaining = user.credits_remaining;
+        token.email = user.email;
+        console.log('[Auth] JWT token created with user ID:', user.id);
+      } else {
+        // On subsequent calls, fetch fresh data from database
+        try {
+          if (token.email) {
+            const dbUser = await getUserByEmail(token.email);
+            if (dbUser) {
+              token.id = dbUser.id;
+              token.credits_remaining = dbUser.credits_remaining;
+              console.log('[Auth] JWT token refreshed with DB user ID:', dbUser.id);
+            }
+          }
+        } catch (error) {
+          console.error('[Auth] Error refreshing JWT token:', error);
+        }
       }
       return token;
     },
