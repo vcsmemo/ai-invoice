@@ -189,7 +189,7 @@ export default function TermsPage() {
                 Any disputes arising from these terms shall be governed by the laws of the jurisdiction in which our business is established.
               </p>
               <p>
-                We encourage users to contact us first at support@yourdomain.com to resolve any issues amicably.
+                We encourage users to contact us first at support@aiinvoicegenerators.com to resolve any issues amicably.
               </p>
             </section>
 
@@ -228,7 +228,7 @@ export default function TermsPage() {
                 If you have questions about these Terms of Service, please contact us:
               </p>
               <p>
-                <strong>Email:</strong> support@yourdomain.com<br />
+                <strong>Email:</strong> support@aiinvoicegenerators.com<br />
                 <strong>Website:</strong> Through the contact form on our website
               </p>
               <p className="text-sm text-muted-foreground">

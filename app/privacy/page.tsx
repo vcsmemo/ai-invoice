@@ -112,7 +112,7 @@ export default function PrivacyPage() {
                 <li><strong>Right to Object:</strong> Object to processing of your personal data</li>
               </ul>
               <p className="text-sm text-muted-foreground">
-                To exercise these rights, please contact us at support@yourdomain.com or use the Settings page.
+                To exercise these rights, please contact us at support@aiinvoicegenerators.com or use the Settings page.
               </p>
             </section>
 
@@ -136,7 +136,7 @@ export default function PrivacyPage() {
                 If you have questions, concerns, or requests regarding this privacy policy or your personal data, please contact us at:
               </p>
               <p>
-                <strong>Email:</strong> support@yourdomain.com<br />
+                <strong>Email:</strong> support@aiinvoicegenerators.com<br />
                 Or use the contact form on our website.
               </p>
             </section>

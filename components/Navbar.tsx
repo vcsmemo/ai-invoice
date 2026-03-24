@@ -17,13 +17,13 @@ export default function Navbar() {
 
       <div className="flex items-center gap-6">
         <Link href="#how" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
-          $ ls --how-it-works
+          How It Works
         </Link>
         <Link href="/templates" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
-          $ cd /templates
+          Templates
         </Link>
         <Link href="/pricing" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
-          $ cd /pricing
+          Pricing
         </Link>
         <ThemeToggle />
 
@@ -39,7 +39,7 @@ export default function Navbar() {
             </Link>
             <Link href="/settings" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 uppercase tracking-widest">
               <Settings className="w-4 h-4" />
-              Config
+              Settings
             </Link>
             <div className="flex items-center gap-3 border-l border-border pl-4">
               <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ export default function Navbar() {
             onClick={() => router.push(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`)}
             className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-[8px] hover:scale-[1.02] active:scale-[0.98] transition-all glow-accent"
           >
-            $ sudo login
+            Sign In
           </button>
         )}
       </div>

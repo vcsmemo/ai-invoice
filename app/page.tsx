@@ -243,8 +243,8 @@ function HomeContent() {
 
               {/* Headline */}
               <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5 tracking-tight text-foreground">
-                $ ai --generate<br />
-                <span className="text-primary">invoice</span> --now
+                AI Generate<br />
+                <span className="text-primary">Invoices</span> Now
               </h1>
 
               {/* Subheadline */}
@@ -258,7 +258,7 @@ function HomeContent() {
                   onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
                   className="group px-8 py-4 bg-primary text-primary-foreground rounded-[10px] font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent flex items-center gap-2"
                 >
-                  $ start-generater --free
+                  Start for Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <p className="text-sm text-muted-foreground">Natural language → Professional PDF · 99.8% success rate</p>
@@ -394,7 +394,7 @@ function HomeContent() {
             onClick={() => window.scrollTo({ top: 700, behavior: 'smooth' })}
             className="group px-6 py-3 bg-primary text-primary-foreground rounded-[10px] font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 glow-accent inline-flex items-center gap-2"
           >
-            $ start-deploying
+            Get Started Now
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

@@ -56,7 +56,7 @@ function TemplatesContent() {
           {/* Sidebar */}
           <aside className="w-full md:w-64 flex-shrink-0 space-y-8">
             <div>
-              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">$ ls --categories</h2>
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">Categories</h2>
               <div className="space-y-1">
                 {categories.map((cat) => (
                   <button
@@ -105,7 +105,7 @@ function TemplatesContent() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <input
                   type="text"
-                  placeholder="search --templates..."
+                  placeholder="Search templates..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-xs focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all placeholder:text-white/20"
@@ -178,7 +178,7 @@ function TemplatesContent() {
             {/* Pagination/Load More */}
             <div className="pt-8 text-center">
               <button className="px-6 py-2 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:bg-white/5 hover:text-foreground transition-all">
-                $ load-more --total 52
+                Load More Templates (52)
               </button>
             </div>
           </div>
@@ -197,7 +197,7 @@ function TemplatesContent() {
 
 export default function TemplatesPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-primary animate-pulse font-mono">$ loading_templates...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-primary animate-pulse font-mono">Loading templates...</div>}>
       <TemplatesContent />
     </Suspense>
   );
