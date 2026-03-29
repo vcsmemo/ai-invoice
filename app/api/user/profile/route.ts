@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
       'default_tax_rate',
       'invoice_prefix',
       'payment_terms',
+      'auto_email_invoices',
+      'cc_me_on_invoices',
     ];
 
     const updates: any = {};

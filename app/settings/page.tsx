@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import { Building2, Upload, Save, Check, AlertCircle, Globe, Phone, CreditCard, FileText } from 'lucide-react';
+import { Building2, Upload, Save, Check, AlertCircle, Globe, Phone, CreditCard, FileText, Mail } from 'lucide-react';
 import { Profile } from '@/lib/supabase';
 import { getSupportedCurrencies } from '@/lib/currencies';
 
@@ -28,6 +28,8 @@ export default function SettingsPage() {
     invoice_prefix: 'INV',
     payment_terms: 'Net 30',
     logo_url: '',
+    auto_email_invoices: false,
+    cc_me_on_invoices: false,
   });
 
   useEffect(() => {
@@ -349,6 +351,64 @@ export default function SettingsPage() {
                     className="w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50 transition-all font-mono resize-none overflow-y-auto"
                   />
                   <p className="text-[10px] text-muted-foreground mt-2 font-mono uppercase tracking-widest opacity-70">These instructions will appear on all invoices</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Email Preferences */}
+            <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-6">
+                <Mail className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-bold text-foreground uppercase tracking-tight"># email_preferences</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg border border-border">
+                  <div className="flex-1">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={profile.auto_email_invoices || false}
+                        onChange={(e) => setProfile({ ...profile, auto_email_invoices: e.target.checked })}
+                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary focus:ring-offset-0"
+                      />
+                      <div>
+                        <div className="font-semibold text-foreground">Auto-send invoices to client</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Automatically email invoices to clients when you create them
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg border border-border">
+                  <div className="flex-1">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={profile.cc_me_on_invoices || false}
+                        onChange={(e) => setProfile({ ...profile, cc_me_on_invoices: e.target.checked })}
+                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary focus:ring-offset-0"
+                      />
+                      <div>
+                        <div className="font-semibold text-foreground">CC me on all invoices</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Receive a copy of every invoice sent to clients
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <p className="text-xs text-muted-foreground font-mono uppercase tracking-widest mb-2">
+                    Note
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Emails will be sent from <span className="font-mono bg-background px-2 py-0.5 rounded">noreply@aiinvoicegenerators.com</span>.
+                    Make sure your invoices include client email addresses.
+                  </p>
                 </div>
               </div>
             </div>

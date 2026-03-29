@@ -84,6 +84,8 @@ export interface Profile {
   default_tax_rate: number;
   invoice_prefix: string;
   payment_terms: string;
+  auto_email_invoices?: boolean;
+  cc_me_on_invoices?: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -171,7 +171,18 @@ function HomeContent() {
       console.log('[PDF Download] ✅ Download process completed!');
 
       // Show success message
-      alert(`✅ PDF downloaded successfully!\n\nFile: ${result.invoice.invoice_number}.pdf\n\nPlease check your browser's Downloads folder.`);
+      let successMessage = `✅ PDF downloaded successfully!\n\nFile: ${result.invoice.invoice_number}.pdf\n\nPlease check your browser's Downloads folder.`;
+
+      if (result.email?.sentToClient) {
+        successMessage += `\n\n📧 Email sent to: ${invoiceData?.customer?.email || 'client'}`;
+        if (result.email.sentCc) {
+          successMessage += `\n📋 Copy sent to: ${session.user?.email || 'your email'}`;
+        }
+      } else if (result.email?.error) {
+        successMessage += `\n\n⚠️ Email delivery failed: ${result.email.error}\n(Your invoice was still created and downloaded)`;
+      }
+
+      alert(successMessage);
     } catch (error) {
       console.error('[PDF Download] Error:', error);
       alert(error instanceof Error ? error.message : 'Failed to download PDF. Please try again.');

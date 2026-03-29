@@ -6,8 +6,12 @@ import {
   generateInvoiceNumber,
   checkUserCredits,
   updateUserCredits,
+  getProfile,
+  updateInvoiceStatus,
 } from '@/lib/supabase';
 import { InvoiceData } from '@/lib/supabase';
+import { sendInvoiceEmail } from '@/lib/email';
+import { generatePDF } from '@/lib/pdf-generator';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,10 +81,66 @@ export async function POST(request: NextRequest) {
     // Note: Credits will be deducted after PDF is successfully generated
     // This ensures users are only charged when PDF download is successful
 
+    // Optional: Send email if auto-send is enabled
+    let emailResult: { sentToClient?: boolean; sentCc?: boolean; error?: string } = {};
+
+    try {
+      const profile = await getProfile(session.user.id);
+
+      if (profile?.auto_email_invoices && invoiceData.customer?.email) {
+        console.log('[Invoice API] Auto-send enabled, generating PDF and sending email...');
+
+        // Generate PDF for email attachment
+        const pdfBuffer = await generatePDF(invoiceData, invoiceNumber);
+
+        // Prepare CC email
+        const ccEmail = profile.cc_me_on_invoices ? session.user.email : undefined;
+
+        // Send email
+        const emailResponse = await sendInvoiceEmail({
+          to: invoiceData.customer.email,
+          cc: ccEmail,
+          invoiceData,
+          invoiceNumber,
+          pdfBuffer,
+          fromEmail: process.env.EMAIL_FROM || 'noreply@aiinvoicegenerators.com',
+          fromName: profile.company_name || undefined,
+        });
+
+        if (emailResponse.success) {
+          console.log('[Invoice API] Email sent successfully');
+          emailResult = {
+            sentToClient: true,
+            sentCc: !!ccEmail,
+          };
+
+          // Update invoice status to 'sent'
+          await updateInvoiceStatus(invoice.id, 'sent');
+        } else {
+          console.error('[Invoice API] Email sending failed:', emailResponse.error);
+          emailResult = {
+            sentToClient: false,
+            sentCc: false,
+            error: emailResponse.error,
+          };
+          // Don't fail the request - invoice was created successfully
+        }
+      }
+    } catch (emailError) {
+      console.error('[Invoice API] Error in email sending flow:', emailError);
+      // Don't fail the request - invoice was created successfully
+      emailResult = {
+        sentToClient: false,
+        sentCc: false,
+        error: emailError instanceof Error ? emailError.message : 'Unknown error',
+      };
+    }
+
     return NextResponse.json({
       success: true,
       invoice,
       message: 'Invoice created successfully',
+      email: emailResult,
     });
   } catch (error) {
     console.error('[Invoice API] Error creating invoice:', error);
