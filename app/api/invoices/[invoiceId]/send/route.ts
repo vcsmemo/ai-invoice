@@ -9,10 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { invoiceId: string } }
 ) {
   try {
-    console.log('[Invoice Send API] Sending invoice:', params.id);
+    console.log('[Invoice Send API] Sending invoice:', params.invoiceId);
 
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -26,7 +26,7 @@ export async function POST(
     }
 
     // Fetch invoice
-    const invoice = await getInvoiceById(params.id);
+    const invoice = await getInvoiceById(params.invoiceId);
 
     if (!invoice) {
       console.log('[Invoice Send API] Invoice not found');
