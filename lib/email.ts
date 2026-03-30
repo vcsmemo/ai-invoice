@@ -48,38 +48,8 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<
   }
 
   try {
-    // Create multipart form data
-    const boundary = `----WebKitFormBoundary${Date.now()}`;
-
-    let body = '';
-
-    // Add from and to headers
-    body += `--${boundary}\r\n`;
-    body += 'Content-Disposition: form-data; name="from"\r\n\r\n';
-    body += `${fromName} <${fromEmail}>\r\n`;
-
-    body += `--${boundary}\r\n`;
-    body += 'Content-Disposition: form-data; name="to"\r\n\r\n';
-    body += `${to}\r\n`;
-
-    if (cc) {
-      body += `--${boundary}\r\n`;
-      body += 'Content-Disposition: form-data; name="cc"\r\n\r\n';
-      body += `${cc}\r\n`;
-    }
-
-    // Subject line
-    const currency = invoiceData.invoice.currency || 'USD';
-    const total = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-    }).format(invoiceData.total);
-
-    body += `--${boundary}\r\n`;
-    body += 'Content-Disposition: form-data; name="subject"\r\n\r\n';
-    body += `Invoice #${invoiceNumber} - ${total}\r\n`;
-
-    // Email body (HTML)
+    // Generate email content
+    const subject = `Invoice #${invoiceNumber}`;
     const htmlBody = generateInvoiceEmailTemplate({
       invoiceNumber,
       invoiceData,
@@ -87,40 +57,66 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<
       fromEmail,
     });
 
-    body += `--${boundary}\r\n`;
-    body += 'Content-Disposition: form-data; name="html"\r\n\r\n';
-    body += `${htmlBody}\r\n`;
+    // Convert PDF to base64
+    const pdfBase64 = pdfBuffer.toString('base64');
 
-    // Attach PDF
-    body += `--${boundary}\r\n`;
-    body += `Content-Disposition: form-data; name="attachments"; filename="${invoiceNumber}.pdf"\r\n`;
-    body += 'Content-Type: application/pdf\r\n\r\n';
-    body += pdfBuffer.toString('binary');
-    body += '\r\n';
+    // Prepare email payload
+    const emailPayload: any = {
+      from: `${fromName} <${fromEmail}>`,
+      to: [to],
+      subject: subject,
+      html: htmlBody,
+      attachments: [
+        {
+          filename: `${invoiceNumber}.pdf`,
+          content: pdfBase64,
+        },
+      ],
+    };
 
-    body += `--${boundary}--\r\n`;
+    // Add CC if provided
+    if (cc) {
+      emailPayload.cc = [cc];
+    }
+
+    console.log('[Email] Sending email via Resend API...');
+    console.log('[Email] To:', to);
+    console.log('[Email] CC:', cc || 'none');
+    console.log('[Email] Subject:', subject);
 
     // Send via Resend API
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
+        'Content-Type': 'application/json',
       },
-      body: body as any,
+      body: JSON.stringify(emailPayload),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('[Email] Resend API error:', response.status, errorText);
+
+      // Try to parse error details
+      let errorMessage = `Failed to send email: ${response.status} ${response.statusText}`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.message) {
+          errorMessage = errorJson.message;
+        }
+      } catch (e) {
+        // If not JSON, use the raw error text
+      }
+
       return {
         success: false,
-        error: `Failed to send email: ${response.status} ${response.statusText}`,
+        error: errorMessage,
       };
     }
 
     const data = await response.json();
-    console.log('[Email] Email sent successfully:', data.id);
+    console.log('[Email] ✅ Email sent successfully:', data);
 
     return {
       success: true,
@@ -199,7 +195,7 @@ function generateInvoiceEmailTemplate(params: {
       <div class="value">
         <strong>${escapeHtml(customer.name)}</strong><br>
         ${customer.company ? escapeHtml(customer.company) + '<br>' : ''}
-        ${customer.address ? escapeHtml(customer.address) + '<br>' : ''}
+        ${customer.address ? escapeHtml(customer.address).replace(/\n/g, '<br>') + '<br>' : ''}
         ${customer.email ? escapeHtml(customer.email) : ''}
       </div>
     </div>
