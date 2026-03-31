@@ -267,7 +267,6 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
 
   // Only add notes if there's enough space on the current page
   const spaceNeeded = (invoice.notes || payment?.instructions) ? 30 : 0;
-  const currentPage = doc.internal.getNumberOfPages();
 
   if (yPosition + spaceNeeded < pageHeight - 25) {
     // Only show notes if they fit on the same page
