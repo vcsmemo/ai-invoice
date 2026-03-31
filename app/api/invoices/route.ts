@@ -77,6 +77,12 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('[Invoice API] Invoice created in database:', invoice.id);
+    console.log('[Invoice API] Invoice data structure:', {
+      hasCustomer: !!invoiceData.customer,
+      customerEmail: invoiceData.customer?.email,
+      hasItems: !!invoiceData.items?.length,
+      total: invoiceData.total,
+    });
 
     // Note: Credits will be deducted after PDF is successfully generated
     // This ensures users are only charged when PDF download is successful
@@ -88,10 +94,12 @@ export async function POST(request: NextRequest) {
       const profile = await getProfile(session.user.id);
 
       console.log('[Invoice API] Email preferences check:');
-      console.log('[Invoice API] - Profile:', JSON.stringify(profile, null, 2));
+      console.log('[Invoice API] - Profile exists:', !!profile);
       console.log('[Invoice API] - auto_email_invoices:', profile?.auto_email_invoices);
       console.log('[Invoice API] - cc_me_on_invoices:', profile?.cc_me_on_invoices);
       console.log('[Invoice API] - Customer email:', invoiceData.customer?.email);
+      console.log('[Invoice API] - RESEND_API_KEY set:', !!process.env.RESEND_API_KEY);
+      console.log('[Invoice API] - EMAIL_FROM:', process.env.EMAIL_FROM);
 
       if (profile?.auto_email_invoices && invoiceData.customer?.email) {
         console.log('[Invoice API] ✅ Auto-send enabled, generating PDF and sending email...');

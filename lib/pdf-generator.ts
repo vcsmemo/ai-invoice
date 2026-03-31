@@ -10,19 +10,45 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   let yPosition = margin;
 
   const { from, customer, items, subtotal, tax, total, invoice, payment } = invoiceData;
-  const currency = invoice.currency || 'USD';
+  const currency = invoice?.currency || 'USD';
   const halfWidth = (pageWidth - 3 * margin) / 2;
 
+  // Safety checks for data
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    console.error('[PDF Generator] No items found in invoice data!');
+  }
+
+  if (!customer) {
+    console.error('[PDF Generator] Customer data missing!');
+  }
+
   // Calculate totals from items if not provided
-  const calculatedSubtotal = items?.reduce((sum, item) => {
-    const itemTotal = (item.quantity || 0) * (item.unitPrice || 0);
+  const calculatedSubtotal = items?.reduce((sum: number, item: any) => {
+    const qty = typeof item.quantity === 'number' ? item.quantity : 0;
+    const price = typeof item.unitPrice === 'number' ? item.unitPrice : 0;
+    const itemTotal = qty * price;
+    console.log('[PDF Generator] Item calculation:', {
+      desc: item.description,
+      qty,
+      price,
+      itemTotal
+    });
     return sum + itemTotal;
   }, 0) || 0;
 
-  const calculatedTotal = items?.reduce((sum, item) => {
-    const itemTotal = item.total || (item.quantity || 0) * (item.unitPrice || 0);
-    return sum + itemTotal;
-  }, 0) || 0;
+  // Calculate total including tax if applicable
+  let calculatedTotal = calculatedSubtotal;
+
+  // Subtract discount if present
+  if (invoiceData.discount && invoiceData.discount.amount) {
+    calculatedTotal -= invoiceData.discount.amount;
+  }
+
+  // Add tax if present
+  if (tax && tax.rate && typeof tax.rate === 'number') {
+    const taxAmount = calculatedTotal * (tax.rate / 100);
+    calculatedTotal += taxAmount;
+  }
 
   // Use provided total if valid, otherwise use calculated
   let validatedTotal = calculatedTotal;
@@ -46,7 +72,14 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
     validated: validatedTotal,
     validatedSubtotal: validatedSubtotal,
     itemCount: items?.length,
-    items: items?.map(i => ({ desc: i.description, qty: i.quantity, price: i.unitPrice, total: i.total }))
+    discount: invoiceData.discount,
+    tax: tax,
+    items: items?.map((i: any) => ({
+      desc: i.description,
+      qty: i.quantity,
+      price: i.unitPrice,
+      total: i.total
+    }))
   });
 
   // Helper function to check if we need a new page
@@ -110,6 +143,11 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   let rightYPosition = yPosition - 25; // Start at same height as FROM
   const rightX = margin + halfWidth + margin;
 
+  // Safety check for customer data
+  if (!customer) {
+    console.error('[PDF Generator] Customer data is missing!');
+  }
+
   doc.setFontSize(8);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(107, 114, 128);
@@ -119,18 +157,19 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text(customer.name.substring(0, 30), rightX, rightYPosition);
+  const customerName = customer?.name || 'Customer Name';
+  doc.text(customerName.substring(0, 30), rightX, rightYPosition);
   rightYPosition += 5;
-  if (customer.company) {
+  if (customer?.company) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.text(customer.company, rightX, rightYPosition);
     rightYPosition += 4;
   }
-  if (customer.address) {
+  if (customer?.address) {
     rightYPosition = addText(customer.address, rightX, rightYPosition, 9, halfWidth);
   }
-  if (customer.email) {
+  if (customer?.email) {
     doc.setFontSize(9);
     doc.text(customer.email, rightX, rightYPosition);
     rightYPosition += 4;

@@ -33,9 +33,19 @@ export async function GET(
       const profile = await getProfile(invoice.user_id);
       console.log('[PDF API] User profile loaded:', profile ? 'Yes' : 'No');
 
-      // Merge profile data into invoice "from" field to ensure completeness
-      let invoiceData = { ...invoice.invoice_data };
+      // Deep clone invoice data to avoid mutation
+      let invoiceData = JSON.parse(JSON.stringify(invoice.invoice_data));
 
+      console.log('[PDF API] Original invoice data structure:', {
+        hasCustomer: !!invoiceData.customer,
+        hasFrom: !!invoiceData.from,
+        hasItems: !!invoiceData.items?.length,
+        hasTotal: typeof invoiceData.total === 'number',
+        customerKeys: invoiceData.customer ? Object.keys(invoiceData.customer) : [],
+        fromKeys: invoiceData.from ? Object.keys(invoiceData.from) : [],
+      });
+
+      // Merge profile data into invoice "from" field to ensure completeness
       if (profile) {
         console.log('[PDF API] Merging profile data into invoice data');
         console.log('[PDF API] Profile data:', {

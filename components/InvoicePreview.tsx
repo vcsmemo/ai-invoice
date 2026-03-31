@@ -582,11 +582,24 @@ export default function InvoicePreview({
                   <div>
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Type</label>
                     <select
-                      value={editedData.discount.percent !== undefined ? 'percent' : 'fixed'}
+                      value={editedData.discount.percent !== undefined && editedData.discount.percent !== null ? 'percent' : 'fixed'}
                       onChange={(e) => {
-                        const isPercent = e.target.value === 'percent';
-                        updateDiscount('percent', isPercent ? 10 : (undefined as any));
-                        updateDiscount('amount', isPercent ? (undefined as any) : 0);
+                        const newType = e.target.value;
+                        if (newType === 'percent') {
+                          // Switch to percent mode - default to 10%
+                          setEditedData({
+                            ...editedData,
+                            discount: { percent: 10, amount: editedData.subtotal * 0.1 },
+                            total: editedData.subtotal * 0.9 + (editedData.tax?.amount || 0)
+                          });
+                        } else {
+                          // Switch to fixed mode - default to $0
+                          setEditedData({
+                            ...editedData,
+                            discount: { percent: undefined, amount: 0 },
+                            total: editedData.subtotal + (editedData.tax?.amount || 0)
+                          });
+                        }
                       }}
                       className="w-full mt-1 px-2 py-1.5 bg-background border border-border rounded-[4px] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
                     >
