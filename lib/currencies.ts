@@ -223,8 +223,13 @@ export function formatCurrency(
 ): string {
   const currency = CURRENCIES[currencyCode] || CURRENCIES.USD
 
+  // Ensure amount is a valid number
+  const validAmount = (typeof amount === 'number' && !isNaN(amount) && isFinite(amount))
+    ? amount
+    : 0;
+
   // Format the number with separators
-  const formattedNumber = amount.toLocaleString('en-US', {
+  const formattedNumber = validAmount.toLocaleString('en-US', {
     minimumFractionDigits: currency.decimals,
     maximumFractionDigits: currency.decimals,
   })

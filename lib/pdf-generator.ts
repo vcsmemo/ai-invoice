@@ -14,17 +14,39 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   const halfWidth = (pageWidth - 3 * margin) / 2;
 
   // Calculate totals from items if not provided
-  const calculatedSubtotal = items?.reduce((sum, item) => sum + ((item.quantity || 0) * (item.unitPrice || 0)), 0) || 0;
-  const calculatedTotal = items?.reduce((sum, item) => sum + (item.total || (item.quantity || 0) * (item.unitPrice || 0)), 0) || 0;
+  const calculatedSubtotal = items?.reduce((sum, item) => {
+    const itemTotal = (item.quantity || 0) * (item.unitPrice || 0);
+    return sum + itemTotal;
+  }, 0) || 0;
 
-  const validatedTotal = typeof total === 'number' ? total : calculatedTotal;
-  const validatedSubtotal = typeof subtotal === 'number' ? subtotal : calculatedSubtotal;
+  const calculatedTotal = items?.reduce((sum, item) => {
+    const itemTotal = item.total || (item.quantity || 0) * (item.unitPrice || 0);
+    return sum + itemTotal;
+  }, 0) || 0;
+
+  // Use provided total if valid, otherwise use calculated
+  let validatedTotal = calculatedTotal;
+  let validatedSubtotal = calculatedSubtotal;
+
+  if (typeof total === 'number' && !isNaN(total) && isFinite(total)) {
+    validatedTotal = total;
+  }
+
+  if (typeof subtotal === 'number' && !isNaN(subtotal) && isFinite(subtotal)) {
+    validatedSubtotal = subtotal;
+  }
+
+  // Final fallback - ensure we have valid numbers
+  validatedTotal = isNaN(validatedTotal) ? 0 : validatedTotal;
+  validatedSubtotal = isNaN(validatedSubtotal) ? 0 : validatedSubtotal;
 
   console.log('[PDF Generator] Total calculation:', {
     provided: total,
     calculated: calculatedTotal,
     validated: validatedTotal,
-    itemCount: items?.length
+    validatedSubtotal: validatedSubtotal,
+    itemCount: items?.length,
+    items: items?.map(i => ({ desc: i.description, qty: i.quantity, price: i.unitPrice, total: i.total }))
   });
 
   // Helper function to check if we need a new page
