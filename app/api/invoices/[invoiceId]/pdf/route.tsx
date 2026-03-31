@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getInvoiceById, updateUserCredits, getSupabaseAdmin } from '@/lib/supabase';
+import { getInvoiceById, updateUserCredits, getSupabaseAdmin, getProfile } from '@/lib/supabase';
 import { generatePDF } from '@/lib/pdf-generator';
 
 export const dynamic = 'force-dynamic';
@@ -29,11 +29,34 @@ export async function GET(
         throw new Error('Missing invoice_data');
       }
 
-      console.log('[PDF API] Invoice data keys:', Object.keys(invoice.invoice_data));
+      // Get user profile to supplement invoice data
+      const profile = await getProfile(invoice.user_id);
+      console.log('[PDF API] User profile loaded:', profile ? 'Yes' : 'No');
+
+      // Merge profile data into invoice "from" field if it's incomplete
+      let invoiceData = { ...invoice.invoice_data };
+
+      if (profile && (!invoiceData.from || Object.keys(invoiceData.from || {}).length < 3)) {
+        console.log('[PDF API] Supplementing invoice data with user profile');
+
+        invoiceData.from = {
+          name: invoiceData.from?.name || '',
+          email: invoiceData.from?.email || '',
+          company: invoiceData.from?.company || profile.company_name || '',
+          address: invoiceData.from?.address || profile.address || '',
+          phone: invoiceData.from?.phone || profile.phone || '',
+          website: invoiceData.from?.website || profile.website || '',
+          taxId: invoiceData.from?.taxId || profile.tax_id || '',
+          logo: invoiceData.from?.logo || profile.logo_url || '',
+        };
+      }
+
+      console.log('[PDF API] Invoice data keys:', Object.keys(invoiceData));
+      console.log('[PDF API] From field:', invoiceData.from ? Object.keys(invoiceData.from) : 'empty');
+      console.log('[PDF API] Total:', invoiceData.total);
       console.log('[PDF API] Creating PDF document using jsPDF...');
 
-      // Generate PDF using jsPDF
-      const pdfBytes = await generatePDF(invoice.invoice_data, invoice.invoice_number);
+      const pdfBytes = await generatePDF(invoiceData, invoice.invoice_number);
 
       if (!pdfBytes || pdfBytes.length === 0) {
         throw new Error('PDF buffer is empty');
