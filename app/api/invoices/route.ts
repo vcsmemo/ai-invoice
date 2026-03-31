@@ -109,22 +109,41 @@ export async function POST(request: NextRequest) {
       if (profile?.auto_email_invoices && invoiceData.customer?.email) {
         console.log('[Invoice API] ✅ Auto-send enabled, generating PDF and sending email...');
 
+        // Merge profile data into invoiceData before generating PDF (same logic as download PDF)
+        let emailInvoiceData = JSON.parse(JSON.stringify(invoiceData));
+        if (profile) {
+          emailInvoiceData.from = {
+            name: emailInvoiceData.from?.name || '',
+            email: emailInvoiceData.from?.email || '',
+            company: emailInvoiceData.from?.company || profile.company_name || '',
+            address: emailInvoiceData.from?.address || profile.address || '',
+            phone: emailInvoiceData.from?.phone || profile.phone || '',
+            website: emailInvoiceData.from?.website || profile.website || '',
+            taxId: emailInvoiceData.from?.taxId || profile.tax_id || '',
+            logo: emailInvoiceData.from?.logo || profile.logo_url || '',
+          };
+          console.log('[Invoice API] Merged profile into email invoiceData:', {
+            hasAddress: !!emailInvoiceData.from.address,
+            hasPhone: !!emailInvoiceData.from.phone,
+          });
+        }
+
         // Generate PDF for email attachment
-        const pdfBuffer = await generatePDF(invoiceData, invoiceNumber);
+        const pdfBuffer = await generatePDF(emailInvoiceData, invoiceNumber);
 
         // Prepare CC email
         const ccEmail = profile.cc_me_on_invoices ? session.user.email : undefined;
 
         console.log('[Invoice API] Sending email...');
-        console.log('[Invoice API] - To:', invoiceData.customer.email);
+        console.log('[Invoice API] - To:', emailInvoiceData.customer.email);
         console.log('[Invoice API] - CC:', ccEmail || 'none');
         console.log('[Invoice API] - From:', process.env.EMAIL_FROM || 'noreply@aiinvoicegenerators.com');
 
         // Send email
         const emailResponse = await sendInvoiceEmail({
-          to: invoiceData.customer.email,
+          to: emailInvoiceData.customer.email,
           cc: ccEmail,
-          invoiceData,
+          invoiceData: emailInvoiceData,
           invoiceNumber,
           pdfBuffer,
           fromEmail: process.env.EMAIL_FROM || 'noreply@aiinvoicegenerators.com',
