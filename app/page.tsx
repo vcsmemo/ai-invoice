@@ -151,16 +151,8 @@ function HomeContent() {
       console.log('[PDF Download] Triggering click on download link...');
       a.click();
 
-      // Fallback: create mouse event
-      const clickEvent = new MouseEvent('click', {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-      });
-      a.dispatchEvent(clickEvent);
-
       // Small delay to ensure download starts
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       console.log('[PDF Download] Removing link from DOM...');
       document.body.removeChild(a);

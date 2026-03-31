@@ -87,14 +87,25 @@ export async function POST(request: NextRequest) {
     try {
       const profile = await getProfile(session.user.id);
 
+      console.log('[Invoice API] Email preferences check:');
+      console.log('[Invoice API] - Profile:', JSON.stringify(profile, null, 2));
+      console.log('[Invoice API] - auto_email_invoices:', profile?.auto_email_invoices);
+      console.log('[Invoice API] - cc_me_on_invoices:', profile?.cc_me_on_invoices);
+      console.log('[Invoice API] - Customer email:', invoiceData.customer?.email);
+
       if (profile?.auto_email_invoices && invoiceData.customer?.email) {
-        console.log('[Invoice API] Auto-send enabled, generating PDF and sending email...');
+        console.log('[Invoice API] ✅ Auto-send enabled, generating PDF and sending email...');
 
         // Generate PDF for email attachment
         const pdfBuffer = await generatePDF(invoiceData, invoiceNumber);
 
         // Prepare CC email
         const ccEmail = profile.cc_me_on_invoices ? session.user.email : undefined;
+
+        console.log('[Invoice API] Sending email...');
+        console.log('[Invoice API] - To:', invoiceData.customer.email);
+        console.log('[Invoice API] - CC:', ccEmail || 'none');
+        console.log('[Invoice API] - From:', process.env.EMAIL_FROM || 'noreply@aiinvoicegenerators.com');
 
         // Send email
         const emailResponse = await sendInvoiceEmail({
@@ -125,6 +136,17 @@ export async function POST(request: NextRequest) {
           };
           // Don't fail the request - invoice was created successfully
         }
+      } else {
+        console.log('[Invoice API] ⚠️ Email not sent - conditions not met:');
+        console.log('[Invoice API] - auto_email_invoices:', profile?.auto_email_invoices);
+        console.log('[Invoice API] - customer.email:', invoiceData.customer?.email);
+        emailResult = {
+          sentToClient: false,
+          sentCc: false,
+          error: profile?.auto_email_invoices
+            ? 'Customer email is required for auto-send'
+            : 'Auto-send is disabled in Settings',
+        };
       }
     } catch (emailError) {
       console.error('[Invoice API] Error in email sending flow:', emailError);
