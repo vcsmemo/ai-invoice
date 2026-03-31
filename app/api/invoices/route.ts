@@ -56,6 +56,11 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('[Invoice API] Invoice data received, generating number...');
+    console.log('[Invoice API] Customer info:', {
+      name: invoiceData.customer?.name,
+      email: invoiceData.customer?.email,
+      company: invoiceData.customer?.company,
+    });
 
     // Generate invoice number using user-specific format
     const invoiceNumber = await generateInvoiceNumber(session.user.id);
