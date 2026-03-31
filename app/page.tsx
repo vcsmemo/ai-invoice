@@ -75,10 +75,12 @@ function HomeContent() {
       return;
     }
 
-    // Check if user is logged in
-    if (!session?.user) {
-      console.log('[PDF Download] User not logged in');
-      alert('Please sign in to download invoices. You\'ll get 5 free credits to start!');
+    // Check if user is logged in (only required for downloading generated invoices)
+    // Sample PDF can be downloaded without login for users to try the product
+    const isDownloadingSample = !invoiceData;
+    if (!session?.user && !isDownloadingSample) {
+      console.log('[PDF Download] User not logged in and trying to download generated invoice');
+      alert('Please sign in to download your generated invoices. You\'ll get 5 free credits to start!');
       setShowLoginPrompt(true);
       return;
     }
@@ -88,42 +90,54 @@ function HomeContent() {
     setIsDownloading(true);
 
     try {
-      // Step 1: Create invoice
-      console.log('[PDF Download] Step 1: Creating invoice in database...');
-      const response = await fetch('/api/invoices', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ invoiceData: dataToDownload }),
-      });
+      let pdfResponse: Response;
+      let filename: string;
+      let result: any; // Declare result variable outside the if/else blocks
 
-      console.log('[PDF Download] Create invoice response status:', response.status);
+      if (isDownloadingSample) {
+        // Sample PDF: Use dedicated endpoint (no login required)
+        console.log('[PDF Download] Downloading sample invoice (no login required)...');
+        pdfResponse = await fetch('/api/sample-pdf');
+        filename = 'sample-invoice.pdf';
+      } else {
+        // Generated invoice: Create invoice in database first (requires login)
+        console.log('[PDF Download] Step 1: Creating invoice in database...');
+        const createResponse = await fetch('/api/invoices', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ invoiceData: dataToDownload }),
+        });
 
-      if (!response.ok) {
-        const data = await response.json();
-        console.error('[PDF Download] Create invoice failed:', data);
-        if (response.status === 401) {
-          setShowLoginPrompt(true);
-          return;
+        console.log('[PDF Download] Create invoice response status:', createResponse.status);
+
+        if (!createResponse.ok) {
+          const data = await createResponse.json();
+          console.error('[PDF Download] Create invoice failed:', data);
+          if (createResponse.status === 401) {
+            setShowLoginPrompt(true);
+            return;
+          }
+          if (createResponse.status === 403) {
+            window.location.href = '/pricing';
+            return;
+          }
+          throw new Error(data.error || 'Failed to create invoice');
         }
-        if (response.status === 403) {
-          window.location.href = '/pricing';
-          return;
+
+        result = await createResponse.json();
+        console.log('[PDF Download] Invoice created successfully:', result);
+
+        if (!result.invoice?.id) {
+          throw new Error('Invalid response: missing invoice ID');
         }
-        throw new Error(data.error || 'Failed to create invoice');
+
+        // Step 2: Generate PDF
+        console.log('[PDF Download] Step 2: Generating PDF for invoice:', result.invoice.id);
+        pdfResponse = await fetch(`/api/invoices/${result.invoice.id}/pdf`);
+        filename = `${result.invoice.invoice_number}.pdf`;
       }
-
-      const result = await response.json();
-      console.log('[PDF Download] Invoice created successfully:', result);
-
-      if (!result.invoice?.id) {
-        throw new Error('Invalid response: missing invoice ID');
-      }
-
-      // Step 2: Generate PDF
-      console.log('[PDF Download] Step 2: Generating PDF for invoice:', result.invoice.id);
-      const pdfResponse = await fetch(`/api/invoices/${result.invoice.id}/pdf`);
 
       console.log('[PDF Download] PDF generation response status:', pdfResponse.status);
 
@@ -156,7 +170,7 @@ function HomeContent() {
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${result.invoice.invoice_number}.pdf`;
+      a.download = filename;
       a.style.display = 'none';
       // Add attributes to ensure download works
       a.setAttribute('target', '_blank');
@@ -181,15 +195,18 @@ function HomeContent() {
       console.log('[PDF Download] ✅ Download process completed!');
 
       // Show success message
-      let successMessage = `✅ PDF downloaded successfully!\n\nFile: ${result.invoice.invoice_number}.pdf\n\nPlease check your browser's Downloads folder.`;
+      let successMessage = `✅ PDF downloaded successfully!\n\nFile: ${filename}\n\nPlease check your browser's Downloads folder.`;
 
-      if (result.email?.sentToClient) {
-        successMessage += `\n\n📧 Email sent to: ${invoiceData?.customer?.email || 'client'}`;
-        if (result.email.sentCc) {
-          successMessage += `\n📋 Copy sent to: ${session.user?.email || 'your email'}`;
+      // Only show email status for generated invoices (not samples)
+      if (!isDownloadingSample && result?.email) {
+        if (result.email.sentToClient) {
+          successMessage += `\n\n📧 Email sent to: ${invoiceData?.customer?.email || 'client'}`;
+          if (result.email.sentCc) {
+            successMessage += `\n📋 Copy sent to: ${session?.user?.email || 'your email'}`;
+          }
+        } else if (result.email.error) {
+          successMessage += `\n\n⚠️ Email delivery failed: ${result.email.error}\n(Your invoice was still created and downloaded)`;
         }
-      } else if (result.email?.error) {
-        successMessage += `\n\n⚠️ Email delivery failed: ${result.email.error}\n(Your invoice was still created and downloaded)`;
       }
 
       alert(successMessage);
@@ -201,46 +218,8 @@ function HomeContent() {
     }
   };
 
-  const sampleInvoice: InvoiceData = {
-    from: {
-      name: 'John Doe',
-      company: 'Creative Solutions LLC',
-      email: 'john@creative-solutions.com',
-      address: '123 Studio Way\nSan Francisco, CA 94103',
-    },
-    customer: {
-      name: 'ABC Company',
-      company: 'ABC Inc.',
-      email: 'billing@abc-inc.com',
-      address: '456 Enterprise Blvd\nNew York, NY 10001',
-    },
-    items: [
-      {
-        description: 'Web Development Services',
-        quantity: 20,
-        unitPrice: 100,
-        total: 2000,
-      },
-      {
-        description: 'UI/UX Design',
-        quantity: 10,
-        unitPrice: 85,
-        total: 850,
-      },
-    ],
-    subtotal: 2850,
-    tax: {
-      rate: 8.5,
-      amount: 242.25,
-    },
-    total: 3092.25,
-    invoice: {
-      invoiceNumber: 'INV-2024-001',
-      issueDate: '2024-03-23',
-      dueDate: '2024-04-22',
-      currency: 'USD',
-    },
-  };
+  // Import shared sample invoice
+  const sampleInvoice = require('@/lib/sample-invoice').sampleInvoice;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -394,7 +373,7 @@ function HomeContent() {
                 </button>
                 {!invoiceData && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    💡 Generate an invoice to download your custom PDF
+                    💡 No sign-up required • Try a sample to see the PDF quality
                   </p>
                 )}
               </div>
