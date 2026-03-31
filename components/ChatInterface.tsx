@@ -129,7 +129,7 @@ export default function ChatInterface({
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-card border border-border rounded-[10px] overflow-hidden shadow-2xl relative">
+    <div className="flex flex-col h-[750px] bg-card border border-border rounded-[10px] overflow-hidden shadow-2xl relative">
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
         <div className="flex gap-1.5">

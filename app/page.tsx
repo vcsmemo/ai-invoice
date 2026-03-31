@@ -370,6 +370,7 @@ function HomeContent() {
             <div className="lg:pl-6">
               <InvoicePreview
                 invoiceData={invoiceData || sampleInvoice}
+                onEdit={handleInvoiceGenerated}
                 onDownload={handleDownload}
                 isDownloading={isDownloading}
               />

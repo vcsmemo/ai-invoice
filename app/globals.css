@@ -59,6 +59,17 @@ body {
   line-height: 1.6;
 }
 
+/* Text selection styling */
+::selection {
+  background-color: rgb(217, 145, 120, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgb(217, 145, 120, 0.3);
+  color: inherit;
+}
+
 /* Grain texture overlay */
 body::before {
   content: '';
