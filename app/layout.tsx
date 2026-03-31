@@ -11,6 +11,7 @@ const mono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://aiinvoicegenerators.com'),
   title: {
     default: 'AI Invoice Generator - Create Professional Invoices in 30 Seconds',
     template: '%s | AI Invoice Generator',

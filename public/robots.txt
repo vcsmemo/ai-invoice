@@ -1,10 +1,9 @@
-# https://www.robotstxt.org/robotstxt.html
+# *
 User-agent: *
 Allow: /
 
-# Disallow authentication routes
-Disallow: /api/auth/
-Disallow: /api/stripe/
+# Host
+Host: https://aiinvoicegenerators.com
 
-# Sitemap
-Sitemap: https://www.aiinvoicegenerators.com/sitemap.xml
+# Sitemaps
+Sitemap: https://aiinvoicegenerators.com/sitemap.xml
