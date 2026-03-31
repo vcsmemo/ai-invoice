@@ -127,7 +127,8 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   }
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  if (from?.name) {
+  // Only show name if it's different from company to avoid duplication
+  if (from?.name && from.name !== from?.company) {
     doc.text(from.name, margin, yPosition);
     yPosition += 4;
   }

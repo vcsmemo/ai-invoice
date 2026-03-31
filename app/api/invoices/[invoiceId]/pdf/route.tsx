@@ -59,7 +59,7 @@ export async function GET(
 
         // Always merge profile data to fill in missing fields
         invoiceData.from = {
-          name: invoiceData.from?.name || profile.company_name || '',
+          name: invoiceData.from?.name || '',  // Don't default to company_name
           email: invoiceData.from?.email || '',
           company: invoiceData.from?.company || profile.company_name || '',
           address: invoiceData.from?.address || profile.address || '',
@@ -70,6 +70,8 @@ export async function GET(
         };
 
         console.log('[PDF API] Merged from field:', {
+          name: invoiceData.from.name,
+          company: invoiceData.from.company,
           hasLogo: !!invoiceData.from.logo,
           hasAddress: !!invoiceData.from.address,
           hasPhone: !!invoiceData.from.phone,
