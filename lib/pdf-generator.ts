@@ -99,16 +99,17 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   };
 
   // ========== HEADER SECTION ==========
-  // Invoice title and number on the right
+  // Invoice title and number on the left
   doc.setTextColor(0, 0, 0);
-  doc.setFontSize(20);
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.text('INVOICE', pageWidth - margin, yPosition + 5, { align: 'right' });
+  doc.text('INVOICE', margin, yPosition + 8);
 
-  doc.setFontSize(14);
-  doc.text(`#${invoice.invoiceNumber || invoiceNumber}`, pageWidth - margin, yPosition + 14, { align: 'right' });
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`#${invoice.invoiceNumber || invoiceNumber}`, margin, yPosition + 18);
 
-  yPosition += 20;
+  yPosition += 28;
 
   // ========== FROM & TO SIDE BY SIDE ==========
   // Left column - FROM
