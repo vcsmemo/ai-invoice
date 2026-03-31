@@ -9,13 +9,15 @@ interface ChatInterfaceProps {
   isLoading?: boolean;
   initialCurrency?: string;
   initialCountry?: string;
+  userProfile?: any;
 }
 
-export default function ChatInterface({ 
-  onInvoiceGenerated, 
+export default function ChatInterface({
+  onInvoiceGenerated,
   isLoading = false,
   initialCurrency = 'USD',
-  initialCountry = 'US'
+  initialCountry = 'US',
+  userProfile = null
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -60,6 +62,19 @@ export default function ChatInterface({
           userContext: {
             currency: initialCurrency,
             country: initialCountry,
+            userProfile: userProfile ? {
+              companyName: userProfile.company_name,
+              logoUrl: userProfile.logo_url,
+              address: userProfile.address,
+              phone: userProfile.phone,
+              website: userProfile.website,
+              taxId: userProfile.tax_id,
+              paymentInstructions: userProfile.payment_instructions,
+              defaultCurrency: userProfile.default_currency,
+              defaultTaxRate: userProfile.default_tax_rate,
+              invoicePrefix: userProfile.invoice_prefix,
+              paymentTerms: userProfile.payment_terms,
+            } : null,
           },
         }),
       });

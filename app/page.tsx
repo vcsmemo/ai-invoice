@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
@@ -11,7 +11,7 @@ import StatsChart from '@/components/StatsChart';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useSession } from 'next-auth/react';
-import { InvoiceData } from '@/lib/supabase';
+import { InvoiceData, Profile } from '@/lib/supabase';
 
 const countryToCurrency: { [key: string]: string } = {
   US: 'USD',
@@ -30,6 +30,24 @@ function HomeContent() {
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
+
+  // Load user profile when session is available
+  useEffect(() => {
+    if (session?.user) {
+      fetch('/api/user/profile')
+        .then(res => res.json())
+        .then(data => {
+          if (data.profile) {
+            console.log('[Home] User profile loaded:', data.profile);
+            setUserProfile(data.profile);
+          }
+        })
+        .catch(err => {
+          console.error('[Home] Error loading profile:', err);
+        });
+    }
+  }, [session]);
 
   const handleInvoiceGenerated = (data: InvoiceData) => {
     setInvoiceData(data);
@@ -342,11 +360,12 @@ function HomeContent() {
           <div className="grid lg:grid-cols-2 gap-6 items-start">
             {/* Chat Interface */}
             <div className="sticky top-6">
-              <ChatInterface 
-              onInvoiceGenerated={handleInvoiceGenerated} 
-              isLoading={isDownloading} 
+              <ChatInterface
+              onInvoiceGenerated={handleInvoiceGenerated}
+              isLoading={isDownloading}
               initialCurrency={currency}
               initialCountry={country}
+              userProfile={userProfile}
             /></div>{/* Invoice Preview */}
             <div className="lg:pl-6">
               <InvoicePreview
