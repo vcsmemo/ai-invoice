@@ -239,8 +239,11 @@ export default function InvoicePreview({
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('[InvoicePreview] Export PDF button CLICKED!');
-                  console.log('[InvoicePreview] onDownload:', onDownload ? 'exists' : 'NULL');
-                  console.log('[InvoicePreview] isDownloading:', isDownloading);
+                  console.log('[InvoicePreview] Using editedData for download');
+                  console.log('[InvoicePreview] Customer email:', editedData.customer?.email);
+                  // Sync editedData to parent before downloading
+                  onEdit?.(editedData);
+                  // Then trigger download
                   onDownload?.();
                 }}
                 disabled={isDownloading}
@@ -263,6 +266,19 @@ export default function InvoicePreview({
                 className="px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary rounded-[6px] hover:opacity-90 transition-colors uppercase tracking-tighter glow-accent"
               >
                 save
+              </button>
+              <button
+                onClick={() => {
+                  console.log('[InvoicePreview] Export PDF from EDIT mode');
+                  console.log('[InvoicePreview] Customer email:', editedData.customer?.email);
+                  // Auto-save and export
+                  onEdit?.(editedData);
+                  onDownload?.();
+                }}
+                disabled={isDownloading}
+                className="px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary rounded-[6px] hover:opacity-90 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors uppercase tracking-tighter glow-accent ml-2"
+              >
+                {isDownloading ? 'generating...' : 'export pdf'}
               </button>
             </>
           )}
