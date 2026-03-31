@@ -13,6 +13,10 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   const currency = invoice.currency || 'USD';
   const halfWidth = (pageWidth - 3 * margin) / 2;
 
+  // Validate and calculate totals if missing
+  const validatedTotal = typeof total === 'number' ? total : (items?.reduce((sum, item) => sum + (item.total || 0), 0) || 0);
+  const validatedSubtotal = typeof subtotal === 'number' ? subtotal : (items?.reduce((sum, item) => sum + (item.total || 0), 0) || 0);
+
   // Helper function to check if we need a new page
   const checkPageBreak = (requiredSpace: number = 20) => {
     if (yPosition + requiredSpace > pageHeight - margin) {
@@ -228,7 +232,7 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
     yPosition += 6;
   };
 
-  addTotalRow('Subtotal', formatCurrency(subtotal, currency));
+  addTotalRow('Subtotal', formatCurrency(validatedSubtotal, currency));
 
   if (invoiceData.discount && invoiceData.discount.amount > 0) {
     const discountLabel = invoiceData.discount.percent
@@ -255,7 +259,7 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(255, 255, 255);
-  addTotalRow('TOTAL', formatCurrency(total, currency), true);
+  addTotalRow('TOTAL', formatCurrency(validatedTotal, currency), true);
 
   // ========== FOOTER NOTES ==========
   yPosition += 10;
