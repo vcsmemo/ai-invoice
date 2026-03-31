@@ -33,14 +33,23 @@ export async function GET(
       const profile = await getProfile(invoice.user_id);
       console.log('[PDF API] User profile loaded:', profile ? 'Yes' : 'No');
 
-      // Merge profile data into invoice "from" field if it's incomplete
+      // Merge profile data into invoice "from" field to ensure completeness
       let invoiceData = { ...invoice.invoice_data };
 
-      if (profile && (!invoiceData.from || Object.keys(invoiceData.from || {}).length < 3)) {
-        console.log('[PDF API] Supplementing invoice data with user profile');
+      if (profile) {
+        console.log('[PDF API] Merging profile data into invoice data');
+        console.log('[PDF API] Profile data:', {
+          company_name: profile.company_name,
+          logo_url: profile.logo_url,
+          address: profile.address,
+          phone: profile.phone,
+          website: profile.website,
+          tax_id: profile.tax_id,
+        });
 
+        // Always merge profile data to fill in missing fields
         invoiceData.from = {
-          name: invoiceData.from?.name || '',
+          name: invoiceData.from?.name || profile.company_name || '',
           email: invoiceData.from?.email || '',
           company: invoiceData.from?.company || profile.company_name || '',
           address: invoiceData.from?.address || profile.address || '',
@@ -49,11 +58,19 @@ export async function GET(
           taxId: invoiceData.from?.taxId || profile.tax_id || '',
           logo: invoiceData.from?.logo || profile.logo_url || '',
         };
+
+        console.log('[PDF API] Merged from field:', {
+          hasLogo: !!invoiceData.from.logo,
+          hasAddress: !!invoiceData.from.address,
+          hasPhone: !!invoiceData.from.phone,
+          hasWebsite: !!invoiceData.from.website,
+        });
       }
 
       console.log('[PDF API] Invoice data keys:', Object.keys(invoiceData));
       console.log('[PDF API] From field:', invoiceData.from ? Object.keys(invoiceData.from) : 'empty');
       console.log('[PDF API] Total:', invoiceData.total);
+      console.log('[PDF API] Items:', invoiceData.items?.length);
       console.log('[PDF API] Creating PDF document using jsPDF...');
 
       const pdfBytes = await generatePDF(invoiceData, invoice.invoice_number);
