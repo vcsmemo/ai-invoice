@@ -30,6 +30,9 @@ module.exports = {
       'freelancer',
       'photographer',
       'designer',
+      'developer',
+      'consultant',
+      'writer',
     ]
 
     for (const profession of professions) {
