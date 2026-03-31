@@ -44,28 +44,6 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   };
 
   // ========== HEADER SECTION ==========
-  let logoHeight = 18;
-
-  // Try to load and display logo if available
-  if (from?.logo && typeof from.logo === 'string' && from.logo.length > 0) {
-    try {
-      // If logo is a URL, we'll use the fallback initials (jsPDF can't fetch external URLs directly)
-      // For production, you'd need to fetch the image server-side and pass it as base64
-      console.log('[PDF Generator] Logo URL provided (will use initials):', from.logo);
-    } catch (error) {
-      console.log('[PDF Generator] Logo load error, using fallback:', error);
-    }
-  }
-
-  // Logo box with initials
-  doc.setFillColor(245, 158, 11);
-  doc.rect(margin, yPosition, 18, 18, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  const initials = (from?.company || 'IN').substring(0, 2).toUpperCase();
-  doc.text(initials, margin + 9, yPosition + 13, { align: 'center' });
-
   // Invoice title and number on the right
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(20);
@@ -75,7 +53,7 @@ export async function generatePDF(invoiceData: InvoiceData, invoiceNumber: strin
   doc.setFontSize(14);
   doc.text(`#${invoice.invoiceNumber || invoiceNumber}`, pageWidth - margin, yPosition + 14, { align: 'right' });
 
-  yPosition += 25;
+  yPosition += 20;
 
   // ========== FROM & TO SIDE BY SIDE ==========
   // Left column - FROM
