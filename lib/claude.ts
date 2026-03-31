@@ -98,114 +98,84 @@ export async function generateInvoiceFromChat(
   }
 ): Promise<InvoiceData> {
   try {
-    const systemPrompt = `You are an expert invoice generation assistant. Your task is to extract invoice information from user conversations and generate structured invoice data.
+    const systemPrompt = `You are an expert invoice generation assistant. Extract invoice information from user input and generate structured JSON data.
 
 CONTEXT:
-- User's default currency: ${userContext?.currency || 'USD'}
-- User's country: ${userContext?.country || 'US'}
-- User's company: ${userContext?.companyName || 'Not specified'}
-- User's profile: ${JSON.stringify(userContext?.profile || {})}
+- Currency: ${userContext?.currency || 'USD'}
+- Company: ${userContext?.companyName || 'Not specified'}
 
 TASK:
-1. Extract all relevant invoice information from the conversation
-2. Ask for missing critical information if needed
-3. Suggest reasonable defaults where appropriate
-4. Calculate totals correctly
+Extract invoice items and customer information. Handle multiple items (separated by semicolons, commas, or line breaks).
+
+EXAMPLES:
+- "Logo design, $500" → {description:"Logo design", quantity:1, unitPrice:500, total:500}
+- "40 hours at $300/hour" → {description:"Web dev", quantity:40, unitPrice:300, total:12000}
+- "20 hours web dev for ABC Company at $100/hour" → customer:ABC Company, item:{description:"Web dev", quantity:20, unitPrice:100, total:2000}
 
 REQUIRED OUTPUT FORMAT (JSON only):
 {
   "from": {
-    "name": "string (user's name from profile)",
-    "email": "string (user's email from profile)",
-    "company": "string (company name from profile)",
-    "address": "string (address from profile)",
-    "phone": "string (phone from profile)",
-    "website": "string (website from profile)",
-    "taxId": "string (tax ID from profile)",
-    "logo": "string (logo URL from profile)"
+    "name": "", "company": "${userContext?.companyName || ''}", "email": "",
+    "address": "", "phone": "", "website": "", "taxId": ""
   },
   "customer": {
-    "name": "string (required - customer's name)",
-    "email": "string (optional - customer's email)",
-    "company": "string (optional - customer's company)",
-    "address": "string (optional - customer's address)"
+    "name": "Customer Name (required)",
+    "email": "", "company": "", "address": ""
   },
   "invoice": {
-    "invoiceNumber": "string (auto-generated)",
-    "poNumber": "string (optional - purchase order number if mentioned)",
-    "issueDate": "YYYY-MM-DD (use today's date)",
-    "dueDate": "YYYY-MM-DD (calculate based on payment terms)",
-    "currency": "USD (or user's default)",
-    "paymentTerms": "string (default: 'Net 30')",
-    "notes": "string (optional - any notes or thank you message)"
+    "invoiceNumber": "", "issueDate": "${new Date().toISOString().split('T')[0]}",
+    "dueDate": "", "currency": "${userContext?.currency || 'USD'}", "paymentTerms": "Net 30"
   },
   "items": [
-    {
-      "description": "string (required)",
-      "quantity": "number (required, default 1)",
-      "unitPrice": "number (required)",
-      "total": "number (quantity × unitPrice)",
-      "sku": "string (optional)"
-    }
+    {"description": "Service description", "quantity": 1, "unitPrice": 0, "total": 0}
   ],
-  "payment": {
-    "method": "string (optional)",
-    "bankAccount": "string (optional - from profile)",
-    "paypalEmail": "string (optional)",
-    "instructions": "string (from profile payment instructions)"
-  },
-  "tax": {
-    "rate": "number (from profile default or 0)",
-    "amount": "number (calculated)",
-    "description": "string (optional, e.g., 'Sales Tax')"
-  },
-  "discount": {
-    "amount": "number (optional)",
-    "percent": "number (optional)",
-    "description": "string (optional)"
-  },
-  "subtotal": "number (calculated)",
-  "total": "number (calculated)",
-  "missingFields": ["array of critical missing fields"],
-  "suggestions": {
-    "taxRate": "number",
-    "paymentTerms": "string"
-  }
+  "subtotal": 0,
+  "total": 0
 }
 
-TAX RULES:
-- US: Services typically 0% tax (unless specified)
-- Use user's default tax rate from profile
-- Calculate tax AFTER discount if both exist
+CALCULATION:
+- subtotal = sum of (quantity × unitPrice) for all items
+- total = subtotal (ignore tax unless specified)
 
-CALCULATION RULES:
-- subtotal = sum of all (quantity × unitPrice)
-- discount = subtotal × discountPercent OR discountAmount
-- taxableAmount = subtotal - discount
-- taxAmount = taxableAmount × taxRate
-- total = taxableAmount + taxAmount
-
-IMPORTANT:
-- Extract PO number if mentioned
-- Note any payment terms mentioned
-- Include company information from profile in "from" field
-- If user mentions specific payment method, include it
-
-Return ONLY the JSON, no additional text. Ensure all numbers are valid numbers, not strings.`;
+Return ONLY the JSON object. No markdown, no explanations.`;
 
     // Using claude-3-5-sonnet-20240620 for deerapi compatibility
     const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20240620';
     console.log('[AI] Using model:', model);
+    console.log('[AI] Sending request with', messages.length, 'messages');
+    console.log('[AI] Last message:', messages[messages.length - 1]?.content?.substring(0, 200));
 
-    const response = await getAnthropic().messages.create({
-      model: model,
-      max_tokens: 2000,
-      system: systemPrompt,
-      messages: messages.map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-      })),
-    });
+    const startTime = Date.now();
+
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);  // 25 second timeout
+
+    let response;
+    try {
+      response = await getAnthropic().messages.create({
+        model: model,
+        max_tokens: 4000,  // Increased from 2000
+        system: systemPrompt,
+        messages: messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+        // @ts-ignore - AbortSignal is supported but not in types
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch (timeoutError: any) {
+      clearTimeout(timeoutId);
+      if (timeoutError.name === 'AbortError') {
+        console.error('[AI] Request timeout after 25 seconds');
+        throw new Error('AI request timeout. The service is taking too long to respond. Please try a simpler request.');
+      }
+      throw timeoutError;
+    }
+
+    const duration = Date.now() - startTime;
+    console.log('[AI] Response received in', duration, 'ms');
 
     // Extract JSON from response
     const content = response.content[0];
